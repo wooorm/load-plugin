@@ -1,0 +1,18 @@
+language: node_js
+node_js:
+- '0.10'
+- '0.11'
+- '0.12'
+- '4.0'
+- '5.0'
+- '6.0'
+sudo: false
+after_script: npm install codecov.io && cat ./coverage/lcov.info | codecov
+deploy:
+  provider: npm
+  email: tituswormer@gmail.com
+  api_key:
+  secure: HwS8Vyt75y+1g6LKphBXIIUINbVx4nQ4i9MtjbCqkmpo4Fu+mIpeNyxA9IiV1DInvliY0HkjAkRKD34K4iomh38fjXUY+dUC2yezTy7wpc1SR9+jFXzJ1eARoD5OiFsIdFNs8uhJYe6kfjL4iz7c40GneyhvBX7nXqu+rHtcEaPphXlJjrBmInuWnmeMvHKuIVmcL9m/7UgwmeTsdq1Co1qZ83qlVg938NRlMqmO9DHyr7HRm9+ygTvowEF2++GmT+3fWMGEEtsDKGhR9C1F7qDFKyH1zUgUsSzZhXetnMvFvEZKb/2oWJ59QViZo/bIMwvvRfreNx2K8DHC5PLg5SIe2lv/eX60BWIiAx+yw0AhxpkVN+cizytTmWjZROUJ6/NkC1kugx28mRaQMbRNfl0cpY719RIxjtIIVu+J7PrIyGeIQKP0T2Xup2g9VFjeHk3YG4+nnQis8az7Ky40OJfmJt2bE0nmYGZTdlHujes7WN6wO6TqGL4tf69PTRJjfV5B90o7eDyPPnkCFWNosuhYd6ymrOrxNe524P1eF2GM5mbifduqyZrR7n+yrVkIk0XQXP5EF4x6YvntKUrXB/rs7wKYZdwbYSqfH0D8O/v+HcbZZfBtF6P9dNLQakPvbzr55FmCYlLum6o4QxNhvxrytLjOq9ddk3aFyPSCvC0=
+  on:
+    node: '6.0'
+    tags: true

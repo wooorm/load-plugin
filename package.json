@@ -1,0 +1,50 @@
+{
+  "name": "load-plugin",
+  "version": "0.0.0",
+  "description": "Load a submodule / plugin",
+  "license": "MIT",
+  "keywords": [
+    "load",
+    "submodule",
+    "package",
+    "plugin"
+  ],
+  "files": [
+    "index.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wooorm/load-plugin.git"
+  },
+  "bugs": "https://github.com/wooorm/load-plugin/issues",
+  "author": "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)",
+  "contributors": [
+    "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)"
+  ],
+  "dependencies": {
+    "find-root": "^1.0.0",
+    "npm-prefix": "^1.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^2.0.0",
+    "istanbul": "^0.4.0",
+    "jscs": "^3.0.0",
+    "jscs-jsdoc": "^2.0.0",
+    "remark": "^4.0.0",
+    "remark-comment-config": "^3.0.0",
+    "remark-github": "^4.0.1",
+    "remark-lint": "^3.0.0",
+    "remark-validate-links": "^3.0.0",
+    "tape": "^4.0.0"
+  },
+  "scripts": {
+    "build-md": "remark . --quiet --frail",
+    "build": "npm run build-md",
+    "lint-api": "eslint .",
+    "lint-style": "jscs --reporter inline .",
+    "lint": "npm run lint-api && npm run lint-style",
+    "test-api": "node test/index.js",
+    "test-coverage": "istanbul cover test/index.js",
+    "test": "npm run build && npm run lint && npm run test-coverage"
+  }
+}
