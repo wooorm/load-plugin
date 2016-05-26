@@ -27,7 +27,6 @@ test('loadPlugin(name[, options])', function (t) {
         function () {
             loadPlugin();
         },
-        /Path must be a string. Received undefined/,
         'should throw when not given `name`'
     );
 
