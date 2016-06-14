@@ -22,6 +22,7 @@
     "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)"
   ],
   "dependencies": {
+    "array-unique": "^0.2.1",
     "find-root": "^1.0.0",
     "npm-prefix": "^1.2.0"
   },

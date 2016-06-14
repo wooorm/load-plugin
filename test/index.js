@@ -48,6 +48,14 @@ test('loadPlugin(name[, options])', function (t) {
     );
 
     t.equals(
+        loadPlugin('remark-lint', {
+            'prefix': 'remark'
+        }),
+        lint,
+        'should not duplicate `$root/node_modules/$prefix-$prefix-$name`'
+    );
+
+    t.equals(
         loadPlugin('lint', {
             'prefix': 'remark-'
         }),

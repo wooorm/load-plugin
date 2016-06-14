@@ -13,6 +13,7 @@
 var fs = require('fs');
 var path = require('path');
 var findRoot = require('find-root');
+var unique = require('array-unique');
 var npmPrefix = require('npm-prefix')();
 
 /*
@@ -73,11 +74,15 @@ function loadPlugin(name, options) {
     var cwd = settings.cwd || process.cwd();
     var global = settings.global;
     var prefix = settings.prefix;
-    var root = findRoot(cwd);
     var paths = [];
+    var root;
     var plugin;
     var index;
     var length;
+
+    try {
+        root = findRoot(cwd);
+    } catch (err) { /* empty */ }
 
     if (global === null || global === undefined) {
         global = isGlobal;
@@ -88,28 +93,43 @@ function loadPlugin(name, options) {
             prefix += '-';
         }
 
-        plugin = prefix + name;
+        if (name.slice(0, prefix.length) !== prefix) {
+            plugin = prefix + name;
+        } else {
+            plugin = name;
+            name = null;
+        }
 
-        paths.push(
-            resolve(root, MODULES, plugin),
-            resolve(cwd, MODULES, plugin)
-        );
+        /* istanbul ignore else - not testable. */
+        if (root) {
+            paths.push(resolve(root, MODULES, plugin));
+        }
+
+        paths.push(resolve(cwd, MODULES, plugin));
 
         if (global) {
             paths.push(resolve(globals, plugin));
         }
     }
 
-    paths.push(
-        resolve(root, name),
-        resolve(root, name + EXTENSION),
-        resolve(root, MODULES, name),
-        resolve(cwd, MODULES, name)
-    );
+    if (name) {
+        /* istanbul ignore else - not testable. */
+        if (root) {
+            paths.push(
+                resolve(root, name),
+                resolve(root, name + EXTENSION),
+                resolve(root, MODULES, name)
+            );
+        }
 
-    if (global) {
-        paths.push(resolve(globals, name));
+        paths.push(resolve(cwd, MODULES, name));
+
+        if (global) {
+            paths.push(resolve(globals, name));
+        }
     }
+
+    unique(paths);
 
     length = paths.length;
     index = -1;
