@@ -100,6 +100,12 @@ The results of `require`ing the first path that exists.
 
 If `require`ing an existing path fails, or if no existing path exists.
 
+### `loadPlugin.resolve(name[, options])`
+
+Search for `name`.  Accepts the same parameters as [`loadPlugin`][load-plugin]
+but returns an absolute path for `name` instead of requiring it,
+and `null` if it cannot be found.
+
 ## Algorithm
 
 Looks in the following paths:
@@ -149,3 +155,5 @@ Where:
 [global]: https://docs.npmjs.com/files/folders#node-modules
 
 [algorithm]: #algorithm
+
+[load-plugin]: #loadpluginname-options

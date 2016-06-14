@@ -14,6 +14,7 @@
  * Dependencies.
  */
 
+var path = require('path');
 var test = require('tape');
 var lint = require('remark-lint');
 var loadPlugin = require('..');
@@ -103,6 +104,28 @@ test('loadPlugin(name[, options])', function (t) {
         },
         /Error: Cannot find module 'does not exist'/,
         'throws if a path cannot be found'
+    );
+
+    t.end();
+});
+
+/*
+ * Tests.
+ */
+
+test('loadPlugin.resolve(name[, options])', function (t) {
+    t.equals(
+        path.relative(__dirname, loadPlugin.resolve('alpha', {
+            'cwd': __dirname
+        })),
+        path.join('node_modules', 'alpha'),
+        'should look for `$cwd/node_modules/$name`'
+    );
+
+    t.equals(
+        loadPlugin.resolve('does not exist'),
+        null,
+        'returns `null` if a path cannot be found'
     );
 
     t.end();

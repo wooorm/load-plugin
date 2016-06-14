@@ -35,7 +35,7 @@ var prefix = isWindows ? /* istanbul ignore next */ '' : 'lib';
 var globals = resolve(npmPrefix, prefix, MODULES);
 
 /**
- * Require a plugin.  Checks, in this order:
+ * Check where plugin can be found.  Checks, in this order:
  *
  * -  `$root/node_modules/$plugin` (if `prefix`);
  * -  `$cwd/node_modules/$plugin` (if `prefix`);
@@ -56,20 +56,18 @@ var globals = resolve(npmPrefix, prefix, MODULES);
  *   joined together with a hyphen;
  * - `$modules` — Location of globally installed npm packages.
  *
- * If one of these exists, it’s `require`d.
+ * If one of these exists, that path is returned.
  *
  * @see https://docs.npmjs.com/files/folders#node-modules
  *
  * @example
- *   var plugin = loadPlugin('toc', {prefix: 'foo'});
+ *   var path = resolvePlugin('toc', {prefix: 'foo'});
  *
- * @throws {Error} - Fails when `name` cannot be
- *   resolved.
  * @param {string} name - Reference to plugin.
  * @param {Object?} [options] - Configuration,
- * @return {Object} - Result of `require`ing `plugin`.
+ * @return {string?} - Path to `name`, if found.
  */
-function loadPlugin(name, options) {
+function resolvePlugin(name, options) {
     var settings = options || {};
     var cwd = settings.cwd || process.cwd();
     var global = settings.global;
@@ -137,16 +135,36 @@ function loadPlugin(name, options) {
     while (++index < length) {
         try {
             fs.statSync(paths[index]);
-            name = paths[index];
-            break;
-        } catch (e) { /* Empty */ }
+        } catch (e) {
+            continue;
+        }
+
+        return paths[index];
     }
 
-    return require(name);
+    return null;
+}
+
+/**
+ * Loads the plug-in found using `resolvePlugin`.
+ *
+ * @example
+ *   var plugin = resolvePlugin('toc', {prefix: 'foo'});
+ *
+ * @throws {Error} - Fails when `name` cannot be
+ *   resolved.
+ * @param {string} name - Reference to plugin.
+ * @param {Object?} [options] - Configuration,
+ * @return {Object} - Result of `require`ing `plugin`.
+ */
+function loadPlugin(name, options) {
+    return require(resolvePlugin(name, options) || name);
 }
 
 /*
  * Expose.
  */
+
+loadPlugin.resolve = resolvePlugin;
 
 module.exports = loadPlugin;
