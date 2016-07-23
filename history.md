@@ -2,6 +2,12 @@
 
 <!--lint disable no-multiple-toplevel-headings -->
 
+1.1.1 / 2016-07-23
+==================
+
+*   Fix bug where loading in REPL didn’t work ([`2f5d869`](https://github.com/wooorm/load-plugin/commit/2f5d869))
+*   Refactor code-style to use `xo` ([`1216b7c`](https://github.com/wooorm/load-plugin/commit/1216b7c))
+
 1.1.0 / 2016-06-14
 ==================
 
