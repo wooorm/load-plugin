@@ -27,25 +27,46 @@
     "npm-prefix": "^1.2.0"
   },
   "devDependencies": {
-    "eslint": "^2.0.0",
     "istanbul": "^0.4.0",
-    "jscs": "^3.0.0",
-    "jscs-jsdoc": "^2.0.0",
     "remark-cli": "^1.0.0",
     "remark-comment-config": "^4.0.0",
     "remark-github": "^5.0.0",
     "remark-lint": "^4.0.0",
     "remark-validate-links": "^4.0.0",
-    "tape": "^4.0.0"
+    "tape": "^4.0.0",
+    "xo": "^0.16.0"
   },
   "scripts": {
     "build-md": "remark . --quiet --frail",
     "build": "npm run build-md",
-    "lint-api": "eslint .",
-    "lint-style": "jscs --reporter inline .",
-    "lint": "npm run lint-api && npm run lint-style",
+    "lint": "xo",
     "test-api": "node test/index.js",
     "test-coverage": "istanbul cover test/index.js",
     "test": "npm run build && npm run lint && npm run test-coverage"
+  },
+  "xo": {
+    "space": true,
+    "rules": {
+      "no-eq-null": "off",
+      "eqeqeq": "off"
+    }
+  },
+  "nyc": {
+    "check-coverage": true,
+    "lines": 100,
+    "functions": 100,
+    "branches": 100
+  },
+  "remarkConfig": {
+    "output": true,
+    "plugins": [
+      "comment-config",
+      "github",
+      "lint",
+      "validate-links"
+    ],
+    "settings": {
+      "bullet": "*"
+    }
   }
 }

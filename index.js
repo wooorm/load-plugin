@@ -8,24 +8,22 @@
 
 'use strict';
 
-/* eslint-env node */
-
+/* Dependencies */
 var fs = require('fs');
 var path = require('path');
 var findRoot = require('find-root');
 var unique = require('array-unique');
 var npmPrefix = require('npm-prefix')();
 
-/*
- * Methods.
- */
+/* Expose. */
+module.exports = exports = loadPlugin;
 
+exports.resolve = resolvePlugin;
+
+/* Methods. */
 var resolve = path.resolve;
 
-/*
- * Constants.
- */
-
+/* Constants. */
 var MODULES = 'node_modules';
 var EXTENSION = '.js';
 var isElectron = process.versions.electron !== undefined;
@@ -68,81 +66,81 @@ var globals = resolve(npmPrefix, prefix, MODULES);
  * @return {string?} - Path to `name`, if found.
  */
 function resolvePlugin(name, options) {
-    var settings = options || {};
-    var cwd = settings.cwd || process.cwd();
-    var global = settings.global;
-    var prefix = settings.prefix;
-    var paths = [];
-    var root;
-    var plugin;
-    var index;
-    var length;
+  var settings = options || {};
+  var cwd = settings.cwd || process.cwd();
+  var global = settings.global;
+  var prefix = settings.prefix;
+  var paths = [];
+  var root;
+  var plugin;
+  var index;
+  var length;
 
+  try {
+    root = findRoot(cwd);
+  } catch (err) { /* empty */ }
+
+  if (global === null || global === undefined) {
+    global = isGlobal;
+  }
+
+  if (prefix) {
+    if (prefix.charAt(prefix.length - 1) !== '-') {
+      prefix += '-';
+    }
+
+    if (name.slice(0, prefix.length) === prefix) {
+      plugin = name;
+      name = null;
+    } else {
+      plugin = prefix + name;
+    }
+
+    /* istanbul ignore else - not testable. */
+    if (root) {
+      paths.push(resolve(root, MODULES, plugin));
+    }
+
+    paths.push(resolve(cwd, MODULES, plugin));
+
+    if (global) {
+      paths.push(resolve(globals, plugin));
+    }
+  }
+
+  if (name) {
+    /* istanbul ignore else - not testable. */
+    if (root) {
+      paths.push(
+        resolve(root, name),
+        resolve(root, name + EXTENSION),
+        resolve(root, MODULES, name)
+      );
+    }
+
+    paths.push(resolve(cwd, MODULES, name));
+
+    if (global) {
+      paths.push(resolve(globals, name));
+    }
+  }
+
+  unique(paths);
+
+  length = paths.length;
+  index = -1;
+
+  while (++index < length) {
     try {
-        root = findRoot(cwd);
-    } catch (err) { /* empty */ }
-
-    if (global === null || global === undefined) {
-        global = isGlobal;
+      fs.statSync(paths[index]);
+    } catch (err) {
+      continue;
     }
 
-    if (prefix) {
-        if (prefix.charAt(prefix.length - 1) !== '-') {
-            prefix += '-';
-        }
+    return paths[index];
+  }
 
-        if (name.slice(0, prefix.length) !== prefix) {
-            plugin = prefix + name;
-        } else {
-            plugin = name;
-            name = null;
-        }
-
-        /* istanbul ignore else - not testable. */
-        if (root) {
-            paths.push(resolve(root, MODULES, plugin));
-        }
-
-        paths.push(resolve(cwd, MODULES, plugin));
-
-        if (global) {
-            paths.push(resolve(globals, plugin));
-        }
-    }
-
-    if (name) {
-        /* istanbul ignore else - not testable. */
-        if (root) {
-            paths.push(
-                resolve(root, name),
-                resolve(root, name + EXTENSION),
-                resolve(root, MODULES, name)
-            );
-        }
-
-        paths.push(resolve(cwd, MODULES, name));
-
-        if (global) {
-            paths.push(resolve(globals, name));
-        }
-    }
-
-    unique(paths);
-
-    length = paths.length;
-    index = -1;
-
-    while (++index < length) {
-        try {
-            fs.statSync(paths[index]);
-        } catch (e) {
-            continue;
-        }
-
-        return paths[index];
-    }
-
-    return null;
+  return null;
 }
 
 /**
@@ -158,13 +156,5 @@ function resolvePlugin(name, options) {
  * @return {Object} - Result of `require`ing `plugin`.
  */
 function loadPlugin(name, options) {
-    return require(resolvePlugin(name, options) || name);
+  return require(resolvePlugin(name, options) || name);
 }
-
-/*
- * Expose.
- */
-
-loadPlugin.resolve = resolvePlugin;
-
-module.exports = loadPlugin;
