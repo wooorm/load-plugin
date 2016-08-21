@@ -1,9 +1,8 @@
 # load-plugin [![Build Status][travis-badge]][travis] [![Coverage Status][codecov-badge]][codecov]
 
-<!-- lint disable heading-increment -->
-
-Load a submodule / plugin.  Accepts a string and looks for files,
-directories, node modules, optionally global packages too.
+Load a submodule, plugin, or file.  Like Node’s `require` and
+`require.resolve`, but from one or more places, and optionally
+global too.
 
 ## Installation
 
@@ -15,77 +14,38 @@ npm install load-plugin
 
 ## Usage
 
-Say we have the following project:
-
-```txt
-project
-|-- node_modules
-|   |-- load-plugin
-|-- package.json
-|-- example
-    |-- index.js
-```
-
-Where `example/index.js` looks as follows:
+Say we’re in this project (with dependencies installed):
 
 ```javascript
-var loadPlugin = require('load-plugin');
+var load = require('load-plugin');
 
-console.log(loadPlugin('foo', {prefix: 'bar'}));
-```
+load.resolve('lint', {prefix: 'remark'});
+// '/Users/tilde/projects/oss/load-plugin/node_modules/remark-lint/index.js'
 
-And the script is run:
+load.resolve('./index.js', {prefix: 'remark'});
+// '/Users/tilde/projects/oss/load-plugin/index.js'
 
-```sh
-cd example
-node index.js
-```
-
-The following paths are checked, in order:
-
-```txt
-project/node_modules/bar-foo
-project/example/node_modules/bar-foo
-project/foo
-project/foo.js
-project/node_modules/foo
-project/example/node_modules/foo
-```
-
-And an error is throw because `foo` isn’t found :worried:
-
-```txt
-module.js:440
-    throw err;
-    ^
-
-Error: Cannot find module 'foo'
-    at Function.Module._resolveFilename (module.js:438:15)
-    at Function.Module._load (module.js:386:25)
-    at Module.require (module.js:466:17)
-    at require (internal/module.js:20:19)
-    at loadPlugin (~/project/node_modules/load-plugin/index.js:126:12)
-    at Object.<anonymous> (~/project/example/index.js:3:13)
-    at Module._compile (module.js:541:32)
-    at Object.Module._extensions..js (module.js:550:10)
-    at Module.load (module.js:456:32)
-    at tryModuleLoad (module.js:415:12)
+load.require('lint', {prefix: 'remark'});
+// [Function: lint]
 ```
 
 ## API
 
 ### `loadPlugin(name[, options])`
 
-Try to load `name`. [See how »][algorithm].
+Uses the standard node module loading strategy to require `name`
+in each given `cwd` (and optionally the global `node_modules`
+directory).
 
-###### Options
+If a prefix is given and `name` is not a path, `prefix-name`
+is also searched (preferring these over non-prefixed modules).
+
+###### `options`
 
 *   `prefix` (`string`, optional)
     — Prefix to search for;
-
-*   `cwd` (`string`, optional, defaults to `process.cwd()`)
-    — Place to search in;
-
+*   `cwd` (`string`, `Array.<string>`, default: `process.cwd()`)
+    — Place or places to search from;
 *   `global` (`boolean`, optional, defaults to whether global is detected)
     — Whether to look for `name` in [global places][global].
     If this is nully, `load-plugin` will detect if it’s currently
@@ -105,32 +65,6 @@ If `require`ing an existing path fails, or if no existing path exists.
 Search for `name`.  Accepts the same parameters as [`loadPlugin`][load-plugin]
 but returns an absolute path for `name` instead of requiring it,
 and `null` if it cannot be found.
-
-## Algorithm
-
-Looks in the following paths:
-
-*   `$root/node_modules/$plugin` — If `prefix` is given;
-*   `$cwd/node_modules/$plugin` — If `prefix` is given;
-*   `$modules/$plugin` — If `prefix` is given and in `global` mode;
-*   `$root/$name`;
-*   `$root/$name.js`;
-*   `$root/node_modules/$name`;
-*   `$cwd/node_modules/$name`;
-*   `$modules/$name` — If in `global` mode.
-
-Where:
-
-*   `$cwd` — Directory to search from (configurable);
-
-*   `$root` — Ancestral directory of `$cwd`, with a `package.json`;
-
-*   `$name` — Given `name`;
-
-*   `$plugin` — When `prefix` is given, `prefix` and `name`
-    joined together with a hyphen;
-
-*   `$modules` — Location of globally installed npm packages.
 
 ## License
 
@@ -153,7 +87,5 @@ Where:
 [author]: http://wooorm.com
 
 [global]: https://docs.npmjs.com/files/folders#node-modules
-
-[algorithm]: #algorithm
 
 [load-plugin]: #loadpluginname-options

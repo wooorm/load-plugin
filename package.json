@@ -22,9 +22,8 @@
     "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)"
   ],
   "dependencies": {
-    "array-unique": "^0.2.1",
-    "find-root": "^1.0.0",
-    "npm-prefix": "^1.2.0"
+    "npm-prefix": "^1.2.0",
+    "resolve-from": "^2.0.0"
   },
   "devDependencies": {
     "istanbul": "^0.4.0",
@@ -59,12 +58,15 @@
   },
   "remarkConfig": {
     "output": true,
-    "plugins": [
-      "comment-config",
-      "github",
-      "lint",
-      "validate-links"
-    ],
+    "plugins": {
+      "comment-config": null,
+      "github": null,
+      "lint": {
+        "heading-increment": false,
+        "list-item-spacing": false
+      },
+      "validate-links": null
+    },
     "settings": {
       "bullet": "*"
     }

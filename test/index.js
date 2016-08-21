@@ -11,7 +11,7 @@
 /* Dependencies. */
 var path = require('path');
 var test = require('tape');
-var lint = require('remark-lint');
+var lint = require('../node_modules/remark-lint');
 var loadPlugin = require('..');
 
 /* Tests. */
@@ -53,15 +53,21 @@ test('loadPlugin(name[, options])', function (t) {
   // global: `$modules/$plugin` is untestable.
 
   t.equals(
-    loadPlugin('index.js'),
+    loadPlugin('./index.js'),
     loadPlugin,
-    'should look for `$root/$name`'
+    'should look for `./index.js`'
   );
 
   t.equals(
-    loadPlugin('index'),
+    loadPlugin('./index'),
     loadPlugin,
-    'should look for `$root/$name.js`'
+    'should look for `./index`'
+  );
+
+  t.equals(
+    loadPlugin('./'),
+    loadPlugin,
+    'should look for `./`'
   );
 
   t.equals(
@@ -74,6 +80,24 @@ test('loadPlugin(name[, options])', function (t) {
     loadPlugin('alpha', {cwd: __dirname}),
     'bravo',
     'should look for `$cwd/node_modules/$name`'
+  );
+
+  t.equals(
+    loadPlugin('lint', {
+      prefix: 'remark',
+      cwd: [__dirname, process.cwd()]
+    }),
+    'echo',
+    'should support a list of `cwd`s (1)'
+  );
+
+  t.equals(
+    loadPlugin('lint', {
+      prefix: 'remark',
+      cwd: [process.cwd(), __dirname]
+    }),
+    lint,
+    'should support a list of `cwd`s (2)'
   );
 
   // global: `$modules/$plugin` is untestable
@@ -93,16 +117,12 @@ test('loadPlugin(name[, options])', function (t) {
   t.end();
 });
 
-/*
-* Tests.
-*/
-
 test('loadPlugin.resolve(name[, options])', function (t) {
   t.equals(
     path.relative(__dirname, loadPlugin.resolve('alpha', {
       cwd: __dirname
     })),
-    path.join('node_modules', 'alpha'),
+    path.join('node_modules', 'alpha', 'index.js'),
     'should look for `$cwd/node_modules/$name`'
   );
 
