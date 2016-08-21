@@ -3,7 +3,7 @@
  * @copyright 2016 Titus Wormer
  * @license MIT
  * @module load-plugin
- * @fileoverview Load a submodule / plugin.
+ * @fileoverview Load a submodule, plugin, or file.
  */
 
 'use strict';
