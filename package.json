@@ -9,13 +9,7 @@
     "package",
     "plugin"
   ],
-  "files": [
-    "index.js"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/wooorm/load-plugin.git"
-  },
+  "repository": "https://github.com/wooorm/load-plugin.git",
   "bugs": "https://github.com/wooorm/load-plugin/issues",
   "author": "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)",
   "contributors": [
@@ -25,6 +19,9 @@
     "npm-prefix": "^1.2.0",
     "resolve-from": "^2.0.0"
   },
+  "files": [
+    "index.js"
+  ],
   "devDependencies": {
     "istanbul": "^0.4.0",
     "remark-cli": "^1.0.0",
