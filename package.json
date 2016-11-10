@@ -23,7 +23,7 @@
     "index.js"
   ],
   "devDependencies": {
-    "istanbul": "^0.4.0",
+    "nyc": "^8.4.0",
     "remark-cli": "^2.1.0",
     "remark-preset-wooorm": "^1.0.0",
     "tape": "^4.0.0",
@@ -34,7 +34,7 @@
     "build": "npm run build-md",
     "lint": "xo",
     "test-api": "node test/index.js",
-    "test-coverage": "istanbul cover test/index.js",
+    "test-coverage": "nyc --reporter lcov tape test/index.js",
     "test": "npm run build && npm run lint && npm run test-coverage"
   },
   "xo": {
