@@ -1,11 +1,3 @@
-/**
- * @author Titus Wormer
- * @copyright 2016 Titus Wormer
- * @license MIT
- * @module load-plugin
- * @fileoverview Load a submodule, plugin, or file.
- */
-
 'use strict';
 
 /* Dependencies */
@@ -25,13 +17,7 @@ var isWindows = process.platform === 'win32';
 var prefix = isWindows ? /* istanbul ignore next */ '' : 'lib';
 var globals = path.resolve(npmPrefix, prefix, 'node_modules');
 
-/**
- * Loads the plug-in found using `resolvePlugin`.
- *
- * @param {string} name - Reference to plugin.
- * @param {Object?} [options] - Configuration,
- * @return {*} - Result of requiring `plugin`.
- */
+/* Load the plug-in found using `resolvePlugin`. */
 function loadPlugin(name, options) {
   return require(resolvePlugin(name, options) || name);
 }

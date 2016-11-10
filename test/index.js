@@ -1,11 +1,3 @@
-/**
- * @author Titus Wormer
- * @copyright 2016 Titus Wormer
- * @license MIT
- * @module load-plugin
- * @fileoverview Test suite for `load-plugin`.
- */
-
 'use strict';
 
 /* Dependencies. */
