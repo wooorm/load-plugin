@@ -23,7 +23,7 @@
     "index.js"
   ],
   "devDependencies": {
-    "nyc": "^8.4.0",
+    "nyc": "^10.0.0",
     "remark-cli": "^2.1.0",
     "remark-lint": "^5.2.0",
     "remark-preset-wooorm": "^1.0.0",
