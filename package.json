@@ -19,7 +19,10 @@
     "npm-prefix": "^1.2.0",
     "resolve-from": "^2.0.0"
   },
+  "main": "index.js",
+  "browser": "browser.js",
   "files": [
+    "browser",
     "index.js"
   ],
   "devDependencies": {
