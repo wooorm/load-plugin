@@ -27,14 +27,14 @@
   ],
   "devDependencies": {
     "nyc": "^10.0.0",
-    "remark-cli": "^2.1.0",
-    "remark-lint": "^5.2.0",
-    "remark-preset-wooorm": "^1.0.0",
+    "remark-cli": "^3.0.0",
+    "remark-lint": "^6.0.0",
+    "remark-preset-wooorm": "^2.0.0",
     "tape": "^4.0.0",
     "xo": "^0.17.0"
   },
   "scripts": {
-    "build-md": "remark . --quiet --frail --output",
+    "build-md": "remark . -qfo",
     "build": "npm run build-md",
     "lint": "xo",
     "test-api": "node test/index.js",
@@ -56,6 +56,6 @@
     "branches": 100
   },
   "remarkConfig": {
-    "presets": "wooorm"
+    "plugins": ["preset-wooorm"]
   }
 }
