@@ -42,7 +42,7 @@ test('loadPlugin(name[, options])', function (t) {
     'should support a dash in `$prefix`'
   );
 
-  // global: `$modules/$plugin` is untestable.
+  // Global: `$modules/$plugin` is untestable.
 
   t.equals(
     loadPlugin('./index.js'),
@@ -92,9 +92,9 @@ test('loadPlugin(name[, options])', function (t) {
     'should support a list of `cwd`s (2)'
   );
 
-  // global: `$modules/$plugin` is untestable
+  // Global: `$modules/$plugin` is untestable
 
-  // also tests `global: true`.
+  // Also tests `global: true`.
   t.throws(
     function () {
       loadPlugin('does not exist', {
