@@ -1,15 +1,12 @@
 'use strict';
 
-/* Dependencies */
 var path = require('path');
 var resolve = require('resolve-from');
 var npmPrefix = require('npm-prefix')();
 
-/* Expose. */
 module.exports = loadPlugin;
 loadPlugin.resolve = resolvePlugin;
 
-/* Constants. */
 var isElectron = process.versions.electron !== undefined;
 var argv = process.argv[1] || /* istanbul ignore next */ '';
 var isGlobal = isElectron || argv.indexOf(npmPrefix) === 0;
@@ -22,23 +19,18 @@ function loadPlugin(name, options) {
   return require(resolvePlugin(name, options) || name);
 }
 
-/**
- * Find a plugin.
+/* Find a plugin.
+ *
+ * See also:
+ * <https://docs.npmjs.com/files/folders#node-modules>
+ * <https://github.com/sindresorhus/resolve-from>
  *
  * Uses the standard node module loading strategy to find $name
  * in each given `cwd` (and optionally the global node_modules
  * directory).
  *
  * If a prefix is given and $name is not a path, `$prefix-$name`
- * is also searched (preferring these over non-prefixed modules).
- *
- * @see https://docs.npmjs.com/files/folders#node-modules
- * @see https://github.com/sindresorhus/resolve-from
- *
- * @param {string} name - Reference to plugin.
- * @param {Object?} [options] - Configuration,
- * @return {string?} - Path to `name`, if found.
- */
+ * is also searched (preferring these over non-prefixed modules). */
 function resolvePlugin(name, options) {
   var settings = options || {};
   var prefix = settings.prefix;

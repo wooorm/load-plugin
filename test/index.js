@@ -1,12 +1,10 @@
 'use strict';
 
-/* Dependencies. */
 var path = require('path');
 var test = require('tape');
 var lint = require('../node_modules/remark-lint');
 var loadPlugin = require('..');
 
-/* Tests. */
 test('loadPlugin(name[, options])', function (t) {
   t.throws(
     function () {
