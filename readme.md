@@ -6,7 +6,7 @@ global too.
 
 ## Installation
 
-[npm][npm-install]:
+[npm][]:
 
 ```bash
 npm install load-plugin
@@ -24,13 +24,13 @@ Say we’re in this project (with dependencies installed):
 var load = require('load-plugin');
 
 load.resolve('lint', {prefix: 'remark'});
-// '/Users/tilde/projects/oss/load-plugin/node_modules/remark-lint/index.js'
+//=> '/Users/tilde/projects/oss/load-plugin/node_modules/remark-lint/index.js'
 
 load.resolve('./index.js', {prefix: 'remark'});
-// '/Users/tilde/projects/oss/load-plugin/index.js'
+//=> '/Users/tilde/projects/oss/load-plugin/index.js'
 
 load.require('lint', {prefix: 'remark'});
-// [Function: lint]
+//=> [Function: lint]
 ```
 
 ## API
@@ -44,17 +44,23 @@ directory).
 If a prefix is given and `name` is not a path, `prefix-name`
 is also searched (preferring these over non-prefixed modules).
 
-###### `options`
+##### `options`
 
-*   `prefix` (`string`, optional)
-    — Prefix to search for;
-*   `cwd` (`string`, `Array.<string>`, default: `process.cwd()`)
-    — Place or places to search from;
-*   `global` (`boolean`, optional, defaults to whether global is detected)
-    — Whether to look for `name` in [global places][global].
-    If this is nully, `load-plugin` will detect if it’s currently
-    running in global mode: either because it’s in Electron, or because
-    a globally installed package is running it.
+###### `options.prefix`
+
+Prefix to search for (`string`, optional).
+
+###### `options.cwd`
+
+Place or places to search from (`string`, `Array.<string>`, default:
+`process.cwd()`).
+
+###### `options.global`
+
+Whether to look for `name` in [global places][global] (`boolean`, optional,
+defaults to whether global is detected).  If this is nully, `load-plugin`
+will detect if it’s currently running in global mode: either because it’s
+in Electron, or because a globally installed package is running it.
 
 ###### Returns
 
@@ -84,7 +90,7 @@ and `null` if it cannot be found.
 
 [codecov]: https://codecov.io/github/wooorm/load-plugin
 
-[npm-install]: https://docs.npmjs.com/cli/install
+[npm]: https://docs.npmjs.com/cli/install
 
 [license]: LICENSE
 
