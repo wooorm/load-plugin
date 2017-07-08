@@ -62,6 +62,10 @@ defaults to whether global is detected).  If this is nully, `load-plugin`
 will detect if it’s currently running in global mode: either because it’s
 in Electron, or because a globally installed package is running it.
 
+Note: Electron runs its own version of Node instead of your system Node.
+That means global packages cannot be found, unless you’ve [set-up][] a [`prefix`
+in your `.npmrc`][prefix] or are using [nvm][] to manage your system node.
+
 ###### Returns
 
 The results of `require`ing the first path that exists.
@@ -101,3 +105,9 @@ and `null` if it cannot be found.
 [load-plugin]: #loadpluginname-options
 
 [browser]: browser.js
+
+[prefix]: https://docs.npmjs.com/misc/config#prefix
+
+[set-up]: https://github.com/sindresorhus/guides/blob/master/npm-global-without-sudo.md
+
+[nvm]: https://github.com/creationix/nvm

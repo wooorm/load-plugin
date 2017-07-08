@@ -1,5 +1,6 @@
 'use strict';
 
+var fs = require('fs');
 var path = require('path');
 var resolve = require('resolve-from');
 var npmPrefix = require('npm-prefix')();
@@ -7,12 +8,24 @@ var npmPrefix = require('npm-prefix')();
 module.exports = loadPlugin;
 loadPlugin.resolve = resolvePlugin;
 
-var isElectron = process.versions.electron !== undefined;
+var electron = process.versions.electron !== undefined;
 var argv = process.argv[1] || /* istanbul ignore next */ '';
-var isGlobal = isElectron || argv.indexOf(npmPrefix) === 0;
-var isWindows = process.platform === 'win32';
-var prefix = isWindows ? /* istanbul ignore next */ '' : 'lib';
-var globals = path.resolve(npmPrefix, prefix, 'node_modules');
+var nvm = process.env.NVM_BIN;
+var globally = electron || argv.indexOf(npmPrefix) === 0;
+var windows = process.platform === 'win32';
+var prefix = path.resolve(windows ? /* istanbul ignore next */ '' : 'lib', 'node_modules');
+var globals = path.resolve(npmPrefix, prefix);
+
+/* istanbul ignore next - If we’re in Electron, we’re running in a modified
+ * Node that cannot really install global node modules.  To find the actual
+ * modules, the user has to either set `prefix` in their `.npmrc` (which is
+ * picked up by `npm-prefix`).  Most people don’t do that, and some use NVM
+ * instead to manage different versions of Node.  Luckily NVM leaks some
+ * environment variables that we can pick up on to try and detect the actual
+ * modules. */
+if (electron && nvm && !fs.existsSync(globals)) {
+  globals = path.resolve(nvm, '..', prefix);
+}
 
 /* Load the plug-in found using `resolvePlugin`. */
 function loadPlugin(name, options) {
@@ -49,7 +62,7 @@ function resolvePlugin(name, options) {
 
   /* Non-path. */
   if (name.indexOf(path.sep) === -1 && name.charAt(0) !== '.') {
-    if (settings.global == null ? isGlobal : settings.global) {
+    if (settings.global == null ? globally : settings.global) {
       sources.push(globals);
     }
 
