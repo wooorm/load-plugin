@@ -15,16 +15,16 @@
   "contributors": [
     "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)"
   ],
-  "dependencies": {
-    "npm-prefix": "^1.2.0",
-    "resolve-from": "^2.0.0"
-  },
   "main": "index.js",
   "browser": "browser.js",
   "files": [
     "browser",
     "index.js"
   ],
+  "dependencies": {
+    "npm-prefix": "^1.2.0",
+    "resolve-from": "^2.0.0"
+  },
   "devDependencies": {
     "nyc": "^11.0.0",
     "remark-cli": "^3.0.0",
@@ -37,7 +37,7 @@
     "build-md": "remark . -qfo",
     "build": "npm run build-md",
     "lint": "xo",
-    "test-api": "node test/index.js",
+    "test-api": "node test",
     "test-coverage": "nyc --reporter lcov tape test/index.js",
     "test": "npm run build && npm run lint && npm run test-coverage"
   },
