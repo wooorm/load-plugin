@@ -2,7 +2,7 @@
 
 var fs = require('fs');
 var path = require('path');
-var resolve = require('resolve-from');
+var resolve = require('resolve-from').silent;
 var npmPrefix = require('npm-prefix')();
 
 module.exports = loadPlugin;
