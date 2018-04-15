@@ -1,6 +1,6 @@
 {
   "name": "load-plugin",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "Load a submodule, plugin, or file",
   "license": "MIT",
   "keywords": [
