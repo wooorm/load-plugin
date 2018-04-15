@@ -9,7 +9,7 @@
     "package",
     "plugin"
   ],
-  "repository": "https://github.com/wooorm/load-plugin.git",
+  "repository": "wooorm/load-plugin",
   "bugs": "https://github.com/wooorm/load-plugin/issues",
   "author": "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)",
   "contributors": [
