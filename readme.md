@@ -21,16 +21,16 @@ unsupported.
 Say we’re in this project (with dependencies installed):
 
 ```javascript
-var load = require('load-plugin');
+var load = require('load-plugin')
 
-load.resolve('lint', {prefix: 'remark'});
-//=> '/Users/tilde/projects/oss/load-plugin/node_modules/remark-lint/index.js'
+load.resolve('lint', {prefix: 'remark'})
+// => '/Users/tilde/projects/oss/load-plugin/node_modules/remark-lint/index.js'
 
-load.resolve('./index.js', {prefix: 'remark'});
-//=> '/Users/tilde/projects/oss/load-plugin/index.js'
+load.resolve('./index.js', {prefix: 'remark'})
+// => '/Users/tilde/projects/oss/load-plugin/index.js'
 
-load.require('lint', {prefix: 'remark'});
-//=> [Function: lint]
+load.require('lint', {prefix: 'remark'})
+// => [Function: lint]
 ```
 
 ## API
