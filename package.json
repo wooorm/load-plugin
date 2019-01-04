@@ -52,9 +52,6 @@
     "prettier": true,
     "esnext": false,
     "rules": {
-      "import/no-dynamic-require": "off",
-      "no-var": "off",
-      "prefer-arrow-callback": "off",
       "no-eq-null": "off",
       "eqeqeq": "off"
     }
