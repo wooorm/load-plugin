@@ -31,6 +31,18 @@ test('loadPlugin(name[, options])', function(t) {
   )
 
   t.equals(
+    loadPlugin('@foxtrot/hotel', {cwd: __dirname, prefix: 'golf'}),
+    'india',
+    'should look for `$cwd/node_modules/$scope/$prefix-$name` if a scope is given'
+  )
+
+  t.equals(
+    loadPlugin('@foxtrot/hotel/other', {cwd: __dirname, prefix: 'golf'}),
+    'other',
+    'should look for `$cwd/node_modules/$scope/$prefix-$name$rest` if a scope is given and $rest is a path'
+  )
+
+  t.equals(
     loadPlugin('lint', {prefix: 'remark'}),
     lint,
     'should look for `$root/node_modules/$prefix-$name`'
@@ -52,6 +64,12 @@ test('loadPlugin(name[, options])', function(t) {
     loadPlugin('remark-lint', {prefix: 'remark'}),
     lint,
     'should not duplicate `$root/node_modules/$prefix-$prefix-$name`'
+  )
+
+  t.equals(
+    loadPlugin('@foxtrot/golf-hotel', {cwd: __dirname, prefix: 'golf'}),
+    'india',
+    'should not duplicate `$cwd/node_modules/$scope/$prefix-$prefix-$name` if a scope is given'
   )
 
   t.equals(
@@ -125,6 +143,14 @@ test('loadPlugin(name[, options])', function(t) {
     },
     /Error: Cannot find module 'does not exist'/,
     'throws if a path cannot be found'
+  )
+
+  t.throws(
+    function() {
+      loadPlugin('@foxtrot', {cwd: __dirname, prefix: 'foo'})
+    },
+    /Error: Cannot find module '@foxtrot'/,
+    'throws for just a scope'
   )
 
   t.end()

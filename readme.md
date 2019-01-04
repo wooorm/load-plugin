@@ -26,6 +26,9 @@ var load = require('load-plugin')
 load.resolve('lint', {prefix: 'remark'})
 // => '/Users/tilde/projects/oss/load-plugin/node_modules/remark-lint/index.js'
 
+load.resolve('@babel/function-name', {prefix: 'helper'})
+// => '/Users/tilde/projects/oss/load-plugin/node_modules/@babel/helper-function-name/index.js'
+
 load.resolve('./index.js', {prefix: 'remark'})
 // => '/Users/tilde/projects/oss/load-plugin/index.js'
 
@@ -43,6 +46,8 @@ directory).
 
 If a prefix is given and `name` is not a path, `prefix-name`
 is also searched (preferring these over non-prefixed modules).
+If name starts with a scope (`@scope/name`), the prefix is applied
+after it: `@scope/prefix-name`.
 
 ##### `options`
 

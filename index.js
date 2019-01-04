@@ -52,6 +52,8 @@ function resolvePlugin(name, options) {
   var length
   var index
   var plugin
+  var slash
+  var scope = ''
 
   if (cwd && typeof cwd === 'object') {
     sources = cwd.concat()
@@ -69,9 +71,23 @@ function resolvePlugin(name, options) {
     if (prefix) {
       prefix = prefix.charAt(prefix.length - 1) === '-' ? prefix : prefix + '-'
 
-      if (name.slice(0, prefix.length) !== prefix) {
-        plugin = prefix + name
+      // Scope?
+      if (name.charAt(0) === '@') {
+        slash = name.indexOf('/')
+
+        // Let’s keep the algorithm simple.  No need to care if this is a
+        // “valid” scope (I think?).  But we do check for the slash.
+        if (slash !== -1) {
+          scope = name.slice(0, slash + 1)
+          name = name.slice(slash + 1)
+        }
       }
+
+      if (name.slice(0, prefix.length) !== prefix) {
+        plugin = scope + prefix + name
+      }
+
+      name = scope + name
     }
   }
 
