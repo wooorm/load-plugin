@@ -60,7 +60,7 @@ function resolvePlugin(name, options) {
   }
 
   // Non-path.
-  if (name.indexOf(path.sep) === -1 && name.charAt(0) !== '.') {
+  if (name.charAt(0) !== '.') {
     if (settings.global == null ? globally : settings.global) {
       sources.push(globals)
     }
