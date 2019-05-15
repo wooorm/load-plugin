@@ -23,7 +23,7 @@
   ],
   "dependencies": {
     "npm-prefix": "^1.2.0",
-    "resolve-from": "^4.0.0"
+    "resolve-from": "^5.0.0"
   },
   "devDependencies": {
     "nyc": "^14.0.0",
