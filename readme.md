@@ -103,7 +103,7 @@ found.
 
 [license]: license
 
-[author]: http://wooorm.com
+[author]: https://wooorm.com
 
 [global]: https://docs.npmjs.com/files/folders#node-modules
 
