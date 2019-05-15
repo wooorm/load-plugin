@@ -50,11 +50,7 @@
   },
   "xo": {
     "prettier": true,
-    "esnext": false,
-    "rules": {
-      "no-eq-null": "off",
-      "eqeqeq": "off"
-    }
+    "esnext": false
   },
   "nyc": {
     "check-coverage": true,

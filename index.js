@@ -47,6 +47,7 @@ function resolvePlugin(name, options) {
   var settings = options || {}
   var prefix = settings.prefix
   var cwd = settings.cwd
+  var global = settings.global
   var filePath
   var sources
   var length
@@ -54,6 +55,10 @@ function resolvePlugin(name, options) {
   var plugin
   var slash
   var scope = ''
+
+  if (global === null || global === undefined) {
+    global = globally
+  }
 
   if (cwd && typeof cwd === 'object') {
     sources = cwd.concat()
@@ -63,7 +68,7 @@ function resolvePlugin(name, options) {
 
   // Non-path.
   if (name.charAt(0) !== '.') {
-    if (settings.global == null ? globally : settings.global) {
+    if (global) {
       sources.push(globals)
     }
 
