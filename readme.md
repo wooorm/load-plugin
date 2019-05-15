@@ -1,4 +1,8 @@
-# load-plugin [![Build Status][travis-badge]][travis] [![Coverage Status][codecov-badge]][codecov]
+# load-plugin
+
+[![Build][build-badge]][build]
+[![Coverage][coverage-badge]][coverage]
+[![Downloads][downloads-badge]][downloads]
 
 Load a submodule, plugin, or file.
 Like Node’s `require` and `require.resolve`, but from one or more places, and
@@ -91,13 +95,17 @@ found.
 
 <!-- Definitions -->
 
-[travis-badge]: https://img.shields.io/travis/wooorm/load-plugin.svg
+[build-badge]: https://img.shields.io/travis/wooorm/load-plugin.svg
 
-[travis]: https://travis-ci.org/wooorm/load-plugin
+[build]: https://travis-ci.org/wooorm/load-plugin
 
-[codecov-badge]: https://img.shields.io/codecov/c/github/wooorm/load-plugin.svg
+[coverage-badge]: https://img.shields.io/codecov/c/github/wooorm/load-plugin.svg
 
-[codecov]: https://codecov.io/github/wooorm/load-plugin
+[coverage]: https://codecov.io/github/wooorm/load-plugin
+
+[downloads-badge]: https://img.shields.io/npm/dm/load-plugin.svg
+
+[downloads]: https://www.npmjs.com/package/load-plugin
 
 [npm]: https://docs.npmjs.com/cli/install
 
