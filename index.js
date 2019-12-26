@@ -3,17 +3,28 @@
 var fs = require('fs')
 var path = require('path')
 var resolve = require('resolve-from').silent
-var npmPrefix = require('npm-prefix')()
+var readNpmConfig = require('libnpmconfig').read
 
 module.exports = loadPlugin
 loadPlugin.resolve = resolvePlugin
 
+var windows = process.platform === 'win32'
+/* istanbul ignore next */
+var builtinNpmConfig =
+  windows && process.env.APPDATA
+    ? {
+        // C:\Users\{username}\AppData\Roaming\npm
+        prefix: path.join(process.env.APPDATA, 'npm')
+      }
+    : null
+
+var npmPrefix = readNpmConfig(null, builtinNpmConfig).prefix
 var electron = process.versions.electron !== undefined
 var argv = process.argv[1] || /* istanbul ignore next */ ''
 var nvm = process.env.NVM_BIN
 var globally = electron || argv.indexOf(npmPrefix) === 0
-var windows = process.platform === 'win32'
-var prefix = windows ? /* istanbul ignore next */ '' : 'lib'
+/* istanbul ignore next */
+var prefix = windows ? '' : 'lib'
 var globals = path.resolve(npmPrefix, prefix, 'node_modules')
 
 // If we’re in Electron, we’re running in a modified Node that cannot really

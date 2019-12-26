@@ -22,7 +22,7 @@
     "index.js"
   ],
   "dependencies": {
-    "npm-prefix": "^1.2.0",
+    "libnpmconfig": "^1.2.1",
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {
