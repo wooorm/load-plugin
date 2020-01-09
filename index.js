@@ -9,14 +9,16 @@ module.exports = loadPlugin
 loadPlugin.resolve = resolvePlugin
 
 var windows = process.platform === 'win32'
+var builtinNpmConfig = null
+
+// The prefix config defaults to the location where node is installed.
+// On most systems, this is /usr/local. On Windows, it’s %AppData%\npm.
 /* istanbul ignore next */
-var builtinNpmConfig =
-  windows && process.env.APPDATA
-    ? {
-        // C:\Users\{username}\AppData\Roaming\npm
-        prefix: path.join(process.env.APPDATA, 'npm')
-      }
-    : null
+if (windows && process.env.APPDATA) {
+  builtinNpmConfig = {
+    prefix: path.join(process.env.APPDATA, 'npm')
+  }
+}
 
 var npmPrefix = readNpmConfig(null, builtinNpmConfig).prefix
 var electron = process.versions.electron !== undefined
