@@ -13,6 +13,7 @@ var windows = process.platform === 'win32'
 
 var argv = process.argv[1] || /* istanbul ignore next */ ''
 var nvm = process.env.NVM_BIN
+var appData = process.env.APPDATA
 
 /* istanbul ignore next */
 var prefix = windows ? '' : 'lib'
@@ -22,8 +23,9 @@ var builtinNpmConfig = null
 // The prefix config defaults to the location where node is installed.
 // On Windows, this is in a place called `%AppData%`, which we have to
 // pass to `libnpmconfig` explicitly:
-if (windows && process.env.APPDATA) {
-  builtinNpmConfig = {prefix: path.join(process.env.APPDATA, 'npm')}
+/* istanbul ignore next */
+if (windows && appData) {
+  builtinNpmConfig = {prefix: path.join(appData, 'npm')}
 }
 
 var npmPrefix = readNpmConfig(null, builtinNpmConfig).prefix
