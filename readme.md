@@ -8,18 +8,18 @@ Load a submodule, plugin, or file.
 Like Node’s `require` and `require.resolve`, but from one or more places, and
 optionally global too.
 
-## Installation
+## Install
 
 [npm][]:
 
-```bash
+```sh
 npm install load-plugin
 ```
 
 When bundled for the browser, a small [file][browser] is included to warn that,
 when any of the below functions are invoked, the action is unsupported.
 
-## Usage
+## Use
 
 Say we’re in this project (with dependencies installed):
 
