@@ -16,9 +16,9 @@ var nvm = process.env.NVM_BIN
 var appData = process.env.APPDATA
 
 /* istanbul ignore next */
-var prefix = windows ? '' : 'lib'
+var globalsLibrary = windows ? '' : 'lib'
 
-var builtinNpmConfig = null
+var builtinNpmConfig
 
 // The prefix config defaults to the location where node is installed.
 // On Windows, this is in a place called `%AppData%`, which we have to
@@ -29,8 +29,18 @@ if (windows && appData) {
 }
 
 var npmPrefix = readNpmConfig(null, builtinNpmConfig).prefix
+
+// If there is no prefix defined, use the defaults
+// See: <https://github.com/eush77/npm-prefix/blob/master/index.js>
+/* istanbul ignore next */
+if (!npmPrefix) {
+  npmPrefix = windows
+    ? path.dirname(process.execPath)
+    : path.resolve(process.execPath, '../..')
+}
+
 var globally = electron || argv.indexOf(npmPrefix) === 0
-var globals = path.resolve(npmPrefix, prefix, 'node_modules')
+var globals = path.resolve(npmPrefix, globalsLibrary, 'node_modules')
 
 // If we’re in Electron, we’re running in a modified Node that cannot really
 // install global node modules.
@@ -42,7 +52,7 @@ var globals = path.resolve(npmPrefix, prefix, 'node_modules')
 // and detect the actual modules.
 /* istanbul ignore next */
 if (electron && nvm && !fs.existsSync(globals)) {
-  globals = path.resolve(nvm, '..', prefix, 'node_modules')
+  globals = path.resolve(nvm, '..', globalsLibrary, 'node_modules')
 }
 
 // Load the plugin found using `resolvePlugin`.
