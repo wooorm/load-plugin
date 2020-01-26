@@ -23,7 +23,7 @@ when any of the below functions are invoked, the action is unsupported.
 
 Say we’re in this project (with dependencies installed):
 
-```javascript
+```js
 var load = require('load-plugin')
 
 load.resolve('lint', {prefix: 'remark'})
