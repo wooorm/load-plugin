@@ -66,9 +66,9 @@ Place or places to search from (`string`, `Array.<string>`, default:
 
 Whether to look for `name` in [global places][global] (`boolean`, optional,
 defaults to whether global is detected).
-If this is nully, `load-plugin` will detect if it’s currently running in global
-mode: either because it’s in Electron, or because a globally installed package
-is running it.
+If this is nullish, `load-plugin` will detect if it’s currently running in
+global mode: either because it’s in Electron, or because a globally installed
+package is running it.
 
 Note: Electron runs its own version of Node instead of your system Node.
 That means global packages cannot be found, unless you’ve [set-up][] a [`prefix`
