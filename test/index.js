@@ -7,8 +7,8 @@ var lint = require('../node_modules/remark-lint')
 var lintPack = require('../node_modules/remark-lint/package')
 var loadPlugin = require('..')
 
-test('loadPlugin(name[, options])', function(t) {
-  t.throws(function() {
+test('loadPlugin(name[, options])', function (t) {
+  t.throws(function () {
     loadPlugin()
   }, 'should throw when not given `name`')
 
@@ -138,7 +138,7 @@ test('loadPlugin(name[, options])', function(t) {
 
   // Also tests `global: true`.
   t.throws(
-    function() {
+    function () {
       loadPlugin('does not exist', {global: true, prefix: 'this'})
     },
     /Error: Cannot find module 'does not exist'/,
@@ -146,7 +146,7 @@ test('loadPlugin(name[, options])', function(t) {
   )
 
   t.throws(
-    function() {
+    function () {
       loadPlugin('@foxtrot', {cwd: __dirname, prefix: 'foo'})
     },
     /Error: Cannot find module '@foxtrot'/,
@@ -156,7 +156,7 @@ test('loadPlugin(name[, options])', function(t) {
   t.end()
 })
 
-test('loadPlugin.resolve(name[, options])', function(t) {
+test('loadPlugin.resolve(name[, options])', function (t) {
   t.equals(
     path.relative(__dirname, loadPlugin.resolve('alpha', {cwd: __dirname})),
     path.join('node_modules', 'alpha', 'index.js'),
