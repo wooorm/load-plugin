@@ -88,11 +88,8 @@ function resolvePlugin(name, options) {
     global = globally
   }
 
-  if (cwd && typeof cwd === 'object') {
-    sources = cwd.concat()
-  } else {
-    sources = [cwd || process.cwd()]
-  }
+  sources =
+    cwd && typeof cwd === 'object' ? cwd.concat() : [cwd || process.cwd()]
 
   // Non-path.
   if (name.charAt(0) !== '.') {
