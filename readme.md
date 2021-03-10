@@ -95,9 +95,9 @@ found.
 
 <!-- Definitions -->
 
-[build-badge]: https://img.shields.io/travis/wooorm/load-plugin.svg
+[build-badge]: https://github.com/wooorm/load-plugin/workflows/main/badge.svg
 
-[build]: https://travis-ci.org/wooorm/load-plugin
+[build]: https://github.com/wooorm/load-plugin/actions
 
 [coverage-badge]: https://img.shields.io/codecov/c/github/wooorm/load-plugin.svg
 
