@@ -95,7 +95,7 @@ found.
 
 <!-- Definitions -->
 
-[build-badge]: https://github.com/wooorm/load-plugin/workflows/main/badge.svg
+[build-badge]: https://github.com/wooorm/load-plugin/actions/workflows/main.yml/badge.svg
 
 [build]: https://github.com/wooorm/load-plugin/actions
 
