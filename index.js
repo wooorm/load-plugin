@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * @typedef {object} LoadPluginOptions
  * @property {string} [prefix]
@@ -7,14 +5,11 @@
  * @property {boolean} [global]
  */
 
-var fs = require('fs')
-var path = require('path')
-var resolve = require('resolve-from').silent
+import fs from 'fs'
+import path from 'path'
+import {silent as resolve} from 'resolve-from'
 // type-coverage:ignore-next-line
-var readNpmConfig = require('libnpmconfig').read
-
-module.exports = loadPlugin
-loadPlugin.resolve = resolvePlugin
+import {read as readNpmConfig} from 'libnpmconfig'
 
 var electron = process.versions.electron !== undefined
 var windows = process.platform === 'win32'
@@ -72,8 +67,8 @@ if (electron && nvm && !fs.existsSync(globals)) {
  * @param {LoadPluginOptions} [options]
  * @returns {any}
  */
-function loadPlugin(name, options) {
-  return require(resolvePlugin(name, options) || name)
+export default function loadPlugin(name, options) {
+  return import(resolvePlugin(name, options) || name).then((m) => m.default)
 }
 
 /**
@@ -93,7 +88,7 @@ function loadPlugin(name, options) {
  * @param {LoadPluginOptions} [options]
  * @returns {string | null}
  */
-function resolvePlugin(name, options) {
+export function resolvePlugin(name, options) {
   var settings = options || {}
   var prefix = settings.prefix
   var cwd = settings.cwd
