@@ -54,7 +54,13 @@
   },
   "xo": {
     "prettier": true,
-    "esnext": false
+    "rules": {
+      "capitalized-comments": "off",
+      "import/no-mutable-exports": "off",
+      "no-misleading-character-class": "off",
+      "no-var": "off",
+      "prefer-arrow-callback": "off"
+    }
   },
   "nyc": {
     "check-coverage": true,
