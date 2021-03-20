@@ -1,8 +1,16 @@
 'use strict'
 
+/**
+ * @typedef {object} LoadPluginOptions
+ * @property {string} [prefix]
+ * @property {string | string[]} [cwd]
+ * @property {boolean} [global]
+ */
+
 var fs = require('fs')
 var path = require('path')
 var resolve = require('resolve-from').silent
+// type-coverage:ignore-next-line
 var readNpmConfig = require('libnpmconfig').read
 
 module.exports = loadPlugin
@@ -18,6 +26,7 @@ var appData = process.env.APPDATA
 /* istanbul ignore next */
 var globalsLibrary = windows ? '' : 'lib'
 
+// type-coverage:ignore-next-line
 var builtinNpmConfig
 
 // The prefix config defaults to the location where node is installed.
@@ -25,6 +34,7 @@ var builtinNpmConfig
 // pass to `libnpmconfig` explicitly:
 /* istanbul ignore next */
 if (windows && appData) {
+  // type-coverage:ignore-next-line
   builtinNpmConfig = {prefix: path.join(appData, 'npm')}
 }
 
@@ -55,41 +65,48 @@ if (electron && nvm && !fs.existsSync(globals)) {
   globals = path.resolve(nvm, '..', globalsLibrary, 'node_modules')
 }
 
-// Load the plugin found using `resolvePlugin`.
+/**
+ *  Load the plugin found using `resolvePlugin`.
+ *
+ * @param {string} name The name to import.
+ * @param {LoadPluginOptions} [options]
+ * @returns {any}
+ */
 function loadPlugin(name, options) {
   return require(resolvePlugin(name, options) || name)
 }
 
-// Find a plugin.
-//
-// See also:
-// <https://docs.npmjs.com/files/folders#node-modules>
-// <https://github.com/sindresorhus/resolve-from>
-//
-// Uses the standard node module loading strategy to find $name in each given
-// `cwd` (and optionally the global `node_modules` directory).
-//
-// If a prefix is given and $name is not a path, `$prefix-$name` is also
-// searched (preferring these over non-prefixed modules).
+/**
+ * Find a plugin.
+ *
+ * See also:
+ * *   https://docs.npmjs.com/files/folders#node-modules
+ * *   https://github.com/sindresorhus/resolve-from
+ *
+ * Uses the standard node module loading strategy to find $name in each given
+ * `cwd` (and optionally the global `node_modules` directory).
+ *
+ * If a prefix is given and $name is not a path, `$prefix-$name` is also
+ * searched (preferring these over non-prefixed modules).
+ *
+ * @param {string} name
+ * @param {LoadPluginOptions} [options]
+ * @returns {string | null}
+ */
 function resolvePlugin(name, options) {
   var settings = options || {}
   var prefix = settings.prefix
   var cwd = settings.cwd
   var global = settings.global
-  var filePath
-  var sources
-  var length
-  var index
+  /** @type string */
   var plugin
-  var slash
   var scope = ''
 
   if (global === null || global === undefined) {
     global = globally
   }
 
-  sources =
-    cwd && typeof cwd === 'object' ? cwd.concat() : [cwd || process.cwd()]
+  var sources = Array.isArray(cwd) ? cwd.concat() : [cwd || process.cwd()]
 
   // Non-path.
   if (name.charAt(0) !== '.') {
@@ -103,7 +120,7 @@ function resolvePlugin(name, options) {
 
       // Scope?
       if (name.charAt(0) === '@') {
-        slash = name.indexOf('/')
+        var slash = name.indexOf('/')
 
         // Let’s keep the algorithm simple.
         // No need to care if this is a “valid” scope (I think?).
@@ -122,12 +139,12 @@ function resolvePlugin(name, options) {
     }
   }
 
-  length = sources.length
-  index = -1
+  var length = sources.length
+  var index = -1
 
   while (++index < length) {
-    cwd = sources[index]
-    filePath = (plugin && resolve(cwd, plugin)) || resolve(cwd, name)
+    var dir = sources[index]
+    var filePath = (plugin && resolve(dir, plugin)) || resolve(dir, name)
 
     if (filePath) {
       return filePath
