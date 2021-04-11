@@ -1,14 +1,26 @@
 'use strict'
 
+var fs = require('fs')
 var path = require('path')
 var test = require('tape')
-var tapePack = require('tape/package')
 var lint = require('../node_modules/remark-lint')
-var lintPack = require('../node_modules/remark-lint/package')
 var loadPlugin = require('..')
+
+/** @type {Object.<string, unknown>} */
+var tapePack = JSON.parse(
+  String(fs.readFileSync(path.join('node_modules', 'tape', 'package.json')))
+)
+
+/** @type {Object.<string, unknown>} */
+var lintPack = JSON.parse(
+  String(
+    fs.readFileSync(path.join('node_modules', 'remark-lint', 'package.json'))
+  )
+)
 
 test('loadPlugin(name[, options])', function (t) {
   t.throws(function () {
+    // @ts-ignore runtime.
     loadPlugin()
   }, 'should throw when not given `name`')
 
@@ -48,13 +60,13 @@ test('loadPlugin(name[, options])', function (t) {
     'should look for `$root/node_modules/$prefix-$name`'
   )
 
-  t.equals(
+  t.deepEquals(
     loadPlugin('lint/package.json', {prefix: 'remark'}),
     lintPack,
     'should look for `$root/node_modules/$prefix-$name$rest` where $rest is a path'
   )
 
-  t.equals(
+  t.deepEquals(
     loadPlugin('lint/package', {prefix: 'remark'}),
     lintPack,
     'should look for `$root/node_modules/$prefix-$name$rest` where $rest is a path without extension'
@@ -92,13 +104,13 @@ test('loadPlugin(name[, options])', function (t) {
     'should look for `$root/node_modules/$name`'
   )
 
-  t.equals(
+  t.deepEquals(
     loadPlugin('tape/package.json'),
     tapePack,
     'should look for `$root/node_modules/$name$rest` where $rest is a path'
   )
 
-  t.equals(
+  t.deepEquals(
     loadPlugin('tape/package'),
     tapePack,
     'should look for `$root/node_modules/$name$rest` where $rest is a path without extension'

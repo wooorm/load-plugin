@@ -19,11 +19,11 @@ loadPlugin.resolve = resolvePlugin
 var electron = process.versions.electron !== undefined
 var windows = process.platform === 'win32'
 
-var argv = process.argv[1] || /* istanbul ignore next */ ''
+var argv = process.argv[1] || /* c8 ignore next */ ''
 var nvm = process.env.NVM_BIN
 var appData = process.env.APPDATA
 
-/* istanbul ignore next */
+/* c8 ignore next */
 var globalsLibrary = windows ? '' : 'lib'
 
 // type-coverage:ignore-next-line
@@ -32,7 +32,7 @@ var builtinNpmConfig
 // The prefix config defaults to the location where node is installed.
 // On Windows, this is in a place called `%AppData%`, which we have to
 // pass to `libnpmconfig` explicitly:
-/* istanbul ignore next */
+/* c8 ignore next 4 */
 if (windows && appData) {
   // type-coverage:ignore-next-line
   builtinNpmConfig = {prefix: path.join(appData, 'npm')}
@@ -42,7 +42,7 @@ var npmPrefix = readNpmConfig(null, builtinNpmConfig).prefix
 
 // If there is no prefix defined, use the defaults
 // See: <https://github.com/eush77/npm-prefix/blob/master/index.js>
-/* istanbul ignore next */
+/* c8 ignore next 5 */
 if (!npmPrefix) {
   npmPrefix = windows
     ? path.dirname(process.execPath)
@@ -60,7 +60,7 @@ var globals = path.resolve(npmPrefix, globalsLibrary, 'node_modules')
 // versions of Node.
 // Luckily NVM leaks some environment variables that we can pick up on to try
 // and detect the actual modules.
-/* istanbul ignore next */
+/* c8 ignore next 3 */
 if (electron && nvm && !fs.existsSync(globals)) {
   globals = path.resolve(nvm, '..', globalsLibrary, 'node_modules')
 }
