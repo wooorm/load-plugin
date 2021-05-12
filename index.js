@@ -1,7 +1,7 @@
 'use strict'
 
 /**
- * @typedef {object} LoadPluginOptions
+ * @typedef {object} Options
  * @property {string} [prefix]
  * @property {string | string[]} [cwd]
  * @property {boolean} [global]
@@ -10,8 +10,7 @@
 var fs = require('fs')
 var path = require('path')
 var resolve = require('resolve-from').silent
-// type-coverage:ignore-next-line
-var readNpmConfig = require('libnpmconfig').read
+var libNpmConfig = require('libnpmconfig')
 
 module.exports = loadPlugin
 loadPlugin.resolve = resolvePlugin
@@ -26,7 +25,7 @@ var appData = process.env.APPDATA
 /* c8 ignore next */
 var globalsLibrary = windows ? '' : 'lib'
 
-// type-coverage:ignore-next-line
+/** @type {{prefix?: string}} */
 var builtinNpmConfig
 
 // The prefix config defaults to the location where node is installed.
@@ -34,11 +33,15 @@ var builtinNpmConfig
 // pass to `libnpmconfig` explicitly:
 /* c8 ignore next 4 */
 if (windows && appData) {
-  // type-coverage:ignore-next-line
   builtinNpmConfig = {prefix: path.join(appData, 'npm')}
 }
 
-var npmPrefix = readNpmConfig(null, builtinNpmConfig).prefix
+/**
+ * Note: `libnpmconfig` uses `figgy-pudding` which is slated for archival.
+ * Either `libnpmconfig` will switch to an alternative or we’ll have to.
+ * @type {string}
+ */
+var npmPrefix = libNpmConfig.read(null, builtinNpmConfig).prefix
 
 // If there is no prefix defined, use the defaults
 // See: <https://github.com/eush77/npm-prefix/blob/master/index.js>
@@ -49,8 +52,8 @@ if (!npmPrefix) {
     : path.resolve(process.execPath, '../..')
 }
 
-var globally = electron || argv.indexOf(npmPrefix) === 0
-var globals = path.resolve(npmPrefix, globalsLibrary, 'node_modules')
+var globalsDefault = electron || argv.indexOf(npmPrefix) === 0
+var globalDir = path.resolve(npmPrefix, globalsLibrary, 'node_modules')
 
 // If we’re in Electron, we’re running in a modified Node that cannot really
 // install global node modules.
@@ -61,15 +64,15 @@ var globals = path.resolve(npmPrefix, globalsLibrary, 'node_modules')
 // Luckily NVM leaks some environment variables that we can pick up on to try
 // and detect the actual modules.
 /* c8 ignore next 3 */
-if (electron && nvm && !fs.existsSync(globals)) {
-  globals = path.resolve(nvm, '..', globalsLibrary, 'node_modules')
+if (electron && nvm && !fs.existsSync(globalDir)) {
+  globalDir = path.resolve(nvm, '..', globalsLibrary, 'node_modules')
 }
 
 /**
  *  Load the plugin found using `resolvePlugin`.
  *
  * @param {string} name The name to import.
- * @param {LoadPluginOptions} [options]
+ * @param {Options} [options]
  * @returns {any}
  */
 function loadPlugin(name, options) {
@@ -83,35 +86,37 @@ function loadPlugin(name, options) {
  * *   https://docs.npmjs.com/files/folders#node-modules
  * *   https://github.com/sindresorhus/resolve-from
  *
- * Uses the standard node module loading strategy to find $name in each given
+ * Uses the standard node module loading strategy to find `$name` in each given
  * `cwd` (and optionally the global `node_modules` directory).
  *
- * If a prefix is given and $name is not a path, `$prefix-$name` is also
+ * If a prefix is given and `$name` is not a path, `$prefix-$name` is also
  * searched (preferring these over non-prefixed modules).
  *
  * @param {string} name
- * @param {LoadPluginOptions} [options]
- * @returns {string | null}
+ * @param {Options} [options]
+ * @returns {string|null}
  */
-function resolvePlugin(name, options) {
-  var settings = options || {}
-  var prefix = settings.prefix
-  var cwd = settings.cwd
-  var global = settings.global
-  /** @type string */
-  var plugin
+function resolvePlugin(name, options = {}) {
+  var prefix = options.prefix
+  var cwd = options.cwd
+  var globals =
+    options.global === undefined || options.global === null
+      ? globalsDefault
+      : options.global
   var scope = ''
-
-  if (global === null || global === undefined) {
-    global = globally
-  }
-
+  var index = -1
   var sources = Array.isArray(cwd) ? cwd.concat() : [cwd || process.cwd()]
+  /** @type {string} */
+  var plugin
+  /** @type {string} */
+  var filePath
+  /** @type {number} */
+  var slash
 
   // Non-path.
   if (name.charAt(0) !== '.') {
-    if (global) {
-      sources.push(globals)
+    if (globals) {
+      sources.push(globalDir)
     }
 
     // Unprefix module.
@@ -120,7 +125,7 @@ function resolvePlugin(name, options) {
 
       // Scope?
       if (name.charAt(0) === '@') {
-        var slash = name.indexOf('/')
+        slash = name.indexOf('/')
 
         // Let’s keep the algorithm simple.
         // No need to care if this is a “valid” scope (I think?).
@@ -139,12 +144,10 @@ function resolvePlugin(name, options) {
     }
   }
 
-  var length = sources.length
-  var index = -1
-
-  while (++index < length) {
-    var dir = sources[index]
-    var filePath = (plugin && resolve(dir, plugin)) || resolve(dir, name)
+  while (++index < sources.length) {
+    filePath =
+      (plugin && resolve(sources[index], plugin)) ||
+      resolve(sources[index], name)
 
     if (filePath) {
       return filePath
