@@ -73,18 +73,17 @@ in your `.npmrc`][prefix] or are using [nvm][] to manage your system node.
 
 ###### Returns
 
-The results of `require`ing the first path that exists.
-
-###### Throws
-
-If `require`ing an existing path fails, or if no existing path exists.
+`Promise.<unknown>` — Promise yielding the results of `require`ing the first
+path that exists.
+The promise rejects if `require`ing an existing path fails, or if no existing
+path exists.
 
 ### `loadPlugin.resolve(name[, options])`
 
 Search for `name`.
-Accepts the same parameters as [`loadPlugin`][load-plugin] but returns an
-absolute path for `name` instead of requiring it, and `null` if it cannot be
-found.
+Accepts the same parameters as [`loadPlugin`][load-plugin] but returns a promise
+resolving to an absolute path for `name` instead of requiring it or `null` if it
+cannot be found.
 
 ## License
 

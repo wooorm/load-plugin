@@ -9,7 +9,7 @@
 
 var fs = require('fs')
 var path = require('path')
-var resolve = require('resolve-from').silent
+var resolveFrom = require('resolve-from')
 var libNpmConfig = require('libnpmconfig')
 
 module.exports = loadPlugin
@@ -73,10 +73,11 @@ if (electron && nvm && !fs.existsSync(globalDir)) {
  *
  * @param {string} name The name to import.
  * @param {Options} [options]
- * @returns {any}
+ * @returns {Promise.<unknown>}
  */
-function loadPlugin(name, options) {
-  return require(resolvePlugin(name, options) || name)
+async function loadPlugin(name, options) {
+  var fp = await resolvePlugin(name, options)
+  return require(fp || name)
 }
 
 /**
@@ -94,7 +95,7 @@ function loadPlugin(name, options) {
  *
  * @param {string} name
  * @param {Options} [options]
- * @returns {string|null}
+ * @returns {Promise.<string|null>}
  */
 function resolvePlugin(name, options = {}) {
   var prefix = options.prefix
@@ -104,14 +105,13 @@ function resolvePlugin(name, options = {}) {
       ? globalsDefault
       : options.global
   var scope = ''
-  var index = -1
   var sources = Array.isArray(cwd) ? cwd.concat() : [cwd || process.cwd()]
   /** @type {string} */
   var plugin
-  /** @type {string} */
-  var filePath
   /** @type {number} */
   var slash
+  /** @type {Array.<[string, string]>} */
+  var tries = []
 
   // Non-path.
   if (name.charAt(0) !== '.') {
@@ -144,15 +144,28 @@ function resolvePlugin(name, options = {}) {
     }
   }
 
+  var index = -1
   while (++index < sources.length) {
-    filePath =
-      (plugin && resolve(sources[index], plugin)) ||
-      resolve(sources[index], name)
-
-    if (filePath) {
-      return filePath
-    }
+    if (plugin) tries.push([sources[index], plugin])
+    tries.push([sources[index], name])
   }
 
-  return null
+  return new Promise(executor)
+
+  /**
+   * @param {(value: string) => void} resolve
+   * @param {(reason: Error) => void} reject
+   */
+  function executor(resolve, reject) {
+    var attempt = tries.shift()
+    var fp = resolveFrom.silent(attempt[0], attempt[1])
+
+    if (fp) {
+      resolve(fp)
+    } else if (tries.length === 0) {
+      resolve(null)
+    } else {
+      executor(resolve, reject)
+    }
+  }
 }
