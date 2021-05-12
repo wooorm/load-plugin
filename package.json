@@ -20,9 +20,7 @@
     "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)"
   ],
   "main": "index.js",
-  "browser": "browser.js",
   "files": [
-    "browser",
     "index.js"
   ],
   "dependencies": {

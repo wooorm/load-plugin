@@ -16,9 +16,6 @@ optionally global too.
 npm install load-plugin
 ```
 
-When bundled for the browser, a small [file][browser] is included to warn that,
-when any of the below functions are invoked, the action is unsupported.
-
 ## Use
 
 Say we’re in this project (with dependencies installed):
@@ -116,8 +113,6 @@ found.
 [global]: https://docs.npmjs.com/files/folders#node-modules
 
 [load-plugin]: #loadpluginname-options
-
-[browser]: browser.js
 
 [prefix]: https://docs.npmjs.com/misc/config#prefix
 
