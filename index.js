@@ -1,19 +1,18 @@
-'use strict'
-
 /**
- * @typedef {object} Options
+ * @typedef ResolveOptions
  * @property {string} [prefix]
- * @property {string | string[]} [cwd]
+ * @property {string|string[]} [cwd]
  * @property {boolean} [global]
  */
 
-var fs = require('fs')
-var path = require('path')
-var resolveFrom = require('resolve-from')
-var libNpmConfig = require('libnpmconfig')
+/**
+ * @typedef {ResolveOptions & {key?: string|false}} LoadOptions
+ */
 
-module.exports = loadPlugin
-loadPlugin.resolve = resolvePlugin
+import fs from 'fs'
+import path from 'path'
+import resolveFrom from 'resolve-from'
+import libNpmConfig from 'libnpmconfig'
 
 var electron = process.versions.electron !== undefined
 var windows = process.platform === 'win32'
@@ -72,12 +71,15 @@ if (electron && nvm && !fs.existsSync(globalDir)) {
  *  Load the plugin found using `resolvePlugin`.
  *
  * @param {string} name The name to import.
- * @param {Options} [options]
- * @returns {Promise.<unknown>}
+ * @param {LoadOptions} [options]
+ * @returns {Promise<unknown>}
  */
-async function loadPlugin(name, options) {
-  var fp = await resolvePlugin(name, options)
-  return require(fp || name)
+export async function loadPlugin(name, options = {}) {
+  var {key = 'default', ...rest} = options
+  var fp = await resolvePlugin(name, rest)
+  /** @type {Object.<string, unknown>} */
+  var mod = await import(fp || name)
+  return key === false ? mod : mod[key]
 }
 
 /**
@@ -94,10 +96,10 @@ async function loadPlugin(name, options) {
  * searched (preferring these over non-prefixed modules).
  *
  * @param {string} name
- * @param {Options} [options]
+ * @param {ResolveOptions} [options]
  * @returns {Promise.<string|null>}
  */
-function resolvePlugin(name, options = {}) {
+export async function resolvePlugin(name, options = {}) {
   var prefix = options.prefix
   var cwd = options.cwd
   var globals =

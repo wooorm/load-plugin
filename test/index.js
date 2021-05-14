@@ -1,22 +1,12 @@
-'use strict'
+import {fileURLToPath} from 'url'
+import path from 'path'
+import test from 'tape'
+// eslint-disable-next-line node/file-extension-in-import
+import testTest from 'tape/lib/test'
+import lint from '../node_modules/remark-lint/index.js'
+import {resolvePlugin, loadPlugin} from '../index.js'
 
-var fs = require('fs')
-var path = require('path')
-var test = require('tape')
-var lint = require('../node_modules/remark-lint')
-var loadPlugin = require('..')
-
-/** @type {Object.<string, unknown>} */
-var tapePack = JSON.parse(
-  String(fs.readFileSync(path.join('node_modules', 'tape', 'package.json')))
-)
-
-/** @type {Object.<string, unknown>} */
-var lintPack = JSON.parse(
-  String(
-    fs.readFileSync(path.join('node_modules', 'remark-lint', 'package.json'))
-  )
-)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 test('loadPlugin(name[, options])', async function (t) {
   try {
@@ -64,14 +54,14 @@ test('loadPlugin(name[, options])', async function (t) {
   )
 
   t.deepEquals(
-    await loadPlugin('lint/package.json', {prefix: 'remark'}),
-    lintPack,
+    await loadPlugin('lint/index.js', {prefix: 'remark'}),
+    lint,
     'should look for `$root/node_modules/$prefix-$name$rest` where $rest is a path'
   )
 
   t.deepEquals(
-    await loadPlugin('lint/package', {prefix: 'remark'}),
-    lintPack,
+    await loadPlugin('lint/index', {prefix: 'remark'}),
+    lint,
     'should look for `$root/node_modules/$prefix-$name$rest` where $rest is a path without extension'
   )
 
@@ -96,14 +86,28 @@ test('loadPlugin(name[, options])', async function (t) {
   // Global: `$modules/$plugin` is untestable.
 
   t.equals(
-    await loadPlugin('./index.js'),
+    await loadPlugin('./index.js', {key: 'loadPlugin'}),
     loadPlugin,
     'should look for `./index.js`'
   )
 
-  t.equals(await loadPlugin('./index'), loadPlugin, 'should look for `./index`')
+  t.equals(
+    await loadPlugin('./index', {key: 'loadPlugin'}),
+    loadPlugin,
+    'should look for `./index`'
+  )
 
-  t.equals(await loadPlugin('./'), loadPlugin, 'should look for `./`')
+  t.equals(
+    await loadPlugin('./', {key: 'loadPlugin'}),
+    loadPlugin,
+    'should look for `./`'
+  )
+
+  t.deepEquals(
+    Object.keys(await loadPlugin('./index.js', {key: false})),
+    ['loadPlugin', 'resolvePlugin'],
+    'should support `key: false`'
+  )
 
   t.equals(
     await loadPlugin('tape'),
@@ -112,15 +116,9 @@ test('loadPlugin(name[, options])', async function (t) {
   )
 
   t.deepEquals(
-    await loadPlugin('tape/package.json'),
-    tapePack,
+    await loadPlugin('tape/lib/test'),
+    testTest,
     'should look for `$root/node_modules/$name$rest` where $rest is a path'
-  )
-
-  t.deepEquals(
-    await loadPlugin('tape/package'),
-    tapePack,
-    'should look for `$root/node_modules/$name$rest` where $rest is a path without extension'
   )
 
   t.equals(
@@ -168,7 +166,7 @@ test('loadPlugin(name[, options])', async function (t) {
   } catch (error) {
     t.match(
       String(error),
-      /Error: Cannot find module 'does not exist'/,
+      /Cannot find package 'does not exist'/,
       'throws if a path cannot be found'
     )
   }
@@ -179,7 +177,7 @@ test('loadPlugin(name[, options])', async function (t) {
   } catch (error) {
     t.match(
       String(error),
-      /Error: Cannot find module '@foxtrot'/,
+      /Invalid module "@foxtrot" is not a valid package name/,
       'throws for just a scope'
     )
   }
@@ -187,18 +185,15 @@ test('loadPlugin(name[, options])', async function (t) {
   t.end()
 })
 
-test('loadPlugin.resolve(name[, options])', async function (t) {
+test('resolvePlugin(name[, options])', async function (t) {
   t.equals(
-    path.relative(
-      __dirname,
-      await loadPlugin.resolve('alpha', {cwd: __dirname})
-    ),
+    path.relative(__dirname, await resolvePlugin('alpha', {cwd: __dirname})),
     path.join('node_modules', 'alpha', 'index.js'),
     'should look for `$cwd/node_modules/$name`'
   )
 
   t.equals(
-    await loadPlugin.resolve('does not exist'),
+    await resolvePlugin('does not exist'),
     null,
     'returns `null` if a path cannot be found'
   )

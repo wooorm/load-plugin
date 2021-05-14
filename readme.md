@@ -10,6 +10,9 @@ optionally global too.
 
 ## Install
 
+This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c):
+Node 12+ is needed to use it and it must be `import`ed instead of `require`d.
+
 [npm][]:
 
 ```sh
@@ -21,22 +24,25 @@ npm install load-plugin
 Say we’re in this project (with dependencies installed):
 
 ```js
-var load = require('load-plugin')
+import {loadPlugin, resolvePlugin} from 'load-plugin'
 
-load.resolve('lint', {prefix: 'remark'})
+await resolvePlugin('lint', {prefix: 'remark'})
 // => '/Users/tilde/projects/oss/load-plugin/node_modules/remark-lint/index.js'
 
-load.resolve('@babel/function-name', {prefix: 'helper'})
+await resolvePlugin('@babel/function-name', {prefix: 'helper'})
 // => '/Users/tilde/projects/oss/load-plugin/node_modules/@babel/helper-function-name/index.js'
 
-load.resolve('./index.js', {prefix: 'remark'})
+await resolvePlugin('./index.js', {prefix: 'remark'})
 // => '/Users/tilde/projects/oss/load-plugin/index.js'
 
-load.require('lint', {prefix: 'remark'})
+await loadPlugin('lint', {prefix: 'remark'})
 // => [Function: lint]
 ```
 
 ## API
+
+This package exports the following identifiers: `loadPlugin`, `resolvePlugin`.
+There is no default export.
 
 ### `loadPlugin(name[, options])`
 
@@ -71,6 +77,13 @@ Note: Electron runs its own version of Node instead of your system Node.
 That means global packages cannot be found, unless you’ve [set-up][] a [`prefix`
 in your `.npmrc`][prefix] or are using [nvm][] to manage your system node.
 
+###### `options.key`
+
+Identifier to take from the exports (`string` or `false`, default: `'default'`).
+For example when given `'whatever'`, the value of `export const whatever = 1`
+will be returned, when given `'default'`, the value of `export default …` is
+used, and when `false` the whole module object is returned.
+
 ###### Returns
 
 `Promise.<unknown>` — Promise yielding the results of `require`ing the first
@@ -84,6 +97,8 @@ Search for `name`.
 Accepts the same parameters as [`loadPlugin`][load-plugin] but returns a promise
 resolving to an absolute path for `name` instead of requiring it or `null` if it
 cannot be found.
+
+Resolve does not take `key` option.
 
 ## License
 
