@@ -8,7 +8,7 @@ import {resolvePlugin, loadPlugin} from '../index.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-test('loadPlugin(name[, options])', async function (t) {
+test('loadPlugin(name[, options])', async (t) => {
   try {
     // @ts-expect-error runtime.
     await loadPlugin()
@@ -17,6 +17,7 @@ test('loadPlugin(name[, options])', async function (t) {
     t.pass('should throw when not given `name`')
   }
 
+  console.log('__dirname:', __dirname)
   t.equals(
     await loadPlugin('delta', {cwd: __dirname, prefix: 'charlie'}),
     'echo',
@@ -30,9 +31,9 @@ test('loadPlugin(name[, options])', async function (t) {
   )
 
   t.equals(
-    await loadPlugin('delta/another', {cwd: __dirname, prefix: 'charlie'}),
+    await loadPlugin('delta/another.js', {cwd: __dirname, prefix: 'charlie'}),
     'another',
-    'should look for `$cwd/node_modules/$prefix-$name$rest` where $rest is a path without extension'
+    'should look for `$cwd/node_modules/$prefix-$name$rest` where $rest is a path'
   )
 
   t.equals(
@@ -42,7 +43,10 @@ test('loadPlugin(name[, options])', async function (t) {
   )
 
   t.equals(
-    await loadPlugin('@foxtrot/hotel/other', {cwd: __dirname, prefix: 'golf'}),
+    await loadPlugin('@foxtrot/hotel/other.js', {
+      cwd: __dirname,
+      prefix: 'golf'
+    }),
     'other',
     'should look for `$cwd/node_modules/$scope/$prefix-$name$rest` if a scope is given and $rest is a path'
   )
@@ -59,11 +63,16 @@ test('loadPlugin(name[, options])', async function (t) {
     'should look for `$root/node_modules/$prefix-$name$rest` where $rest is a path'
   )
 
-  t.deepEquals(
-    await loadPlugin('lint/index', {prefix: 'remark'}),
-    lint,
-    'should look for `$root/node_modules/$prefix-$name$rest` where $rest is a path without extension'
-  )
+  try {
+    await loadPlugin('lint/index', {prefix: 'remark'})
+    t.fail()
+  } catch (error) {
+    t.match(
+      String(error),
+      /Cannot find package 'lint'/,
+      'throws if a path cannot be found'
+    )
+  }
 
   t.equals(
     await loadPlugin('remark-lint', {prefix: 'remark'}),
@@ -91,17 +100,27 @@ test('loadPlugin(name[, options])', async function (t) {
     'should look for `./index.js`'
   )
 
-  t.equals(
-    await loadPlugin('./index', {key: 'loadPlugin'}),
-    loadPlugin,
-    'should look for `./index`'
-  )
+  try {
+    await loadPlugin('./index', {key: 'loadPlugin'})
+    t.fail()
+  } catch (error) {
+    t.match(
+      String(error),
+      /Cannot find module/,
+      'throws if passing a path w/o extension'
+    )
+  }
 
-  t.equals(
-    await loadPlugin('./', {key: 'loadPlugin'}),
-    loadPlugin,
-    'should look for `./`'
-  )
+  try {
+    await loadPlugin('./', {key: 'loadPlugin'})
+    t.fail()
+  } catch (error) {
+    t.match(
+      String(error),
+      /Directory import/,
+      'throws if passing a path to a directory'
+    )
+  }
 
   t.deepEquals(
     Object.keys(await loadPlugin('./index.js', {key: false})),
@@ -133,11 +152,16 @@ test('loadPlugin(name[, options])', async function (t) {
     'should look for `$cwd/node_modules/$name$rest` where $rest is a path'
   )
 
-  t.equals(
-    await loadPlugin('alpha/other', {cwd: __dirname}),
-    'other',
-    'should look for `$cwd/node_modules/$name$rest` where $rest is a path without extension'
-  )
+  try {
+    await loadPlugin('alpha/other', {cwd: __dirname})
+    t.fail()
+  } catch (error) {
+    t.match(
+      String(error),
+      /Cannot find module/,
+      'throws for `$cwd/node_modules/$name$rest` where $rest is a path without extension'
+    )
+  }
 
   t.equals(
     await loadPlugin('lint', {
@@ -185,18 +209,19 @@ test('loadPlugin(name[, options])', async function (t) {
   t.end()
 })
 
-test('resolvePlugin(name[, options])', async function (t) {
+test('resolvePlugin(name[, options])', async (t) => {
   t.equals(
     path.relative(__dirname, await resolvePlugin('alpha', {cwd: __dirname})),
     path.join('node_modules', 'alpha', 'index.js'),
     'should look for `$cwd/node_modules/$name`'
   )
 
-  t.equals(
-    await resolvePlugin('does not exist'),
-    null,
-    'returns `null` if a path cannot be found'
-  )
+  try {
+    await resolvePlugin('does not exist')
+    t.fail()
+  } catch (error) {
+    t.match(String(error), /Cannot find package/, 'throws for just a scope')
+  }
 
   t.end()
 })

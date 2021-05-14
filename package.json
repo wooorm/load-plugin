@@ -28,8 +28,8 @@
     "index.js"
   ],
   "dependencies": {
-    "libnpmconfig": "^1.0.0",
-    "resolve-from": "^5.0.0"
+    "import-meta-resolve": "^1.0.0",
+    "libnpmconfig": "^1.0.0"
   },
   "devDependencies": {
     "@types/tape": "^4.0.0",
@@ -63,11 +63,7 @@
   "xo": {
     "prettier": true,
     "rules": {
-      "capitalized-comments": "off",
-      "import/no-mutable-exports": "off",
-      "no-misleading-character-class": "off",
-      "no-var": "off",
-      "prefer-arrow-callback": "off"
+      "no-await-in-loop": "off"
     }
   },
   "remarkConfig": {
