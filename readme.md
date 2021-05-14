@@ -97,7 +97,7 @@ path that exists.
 The promise rejects if `require`ing an existing path fails, or if no existing
 path exists.
 
-### `loadPlugin.resolve(name[, options])`
+### `resolvePlugin(name[, options])`
 
 Search for `name`.
 Accepts the same parameters as [`loadPlugin`][load-plugin] (except `key`) but
