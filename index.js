@@ -10,22 +10,23 @@
  */
 
 import fs from 'fs'
+import {pathToFileURL, fileURLToPath} from 'url'
 import path from 'path'
-import resolveFrom from 'resolve-from'
+import {resolve as esmResolve} from 'import-meta-resolve'
 import libNpmConfig from 'libnpmconfig'
 
-var electron = process.versions.electron !== undefined
-var windows = process.platform === 'win32'
+const electron = process.versions.electron !== undefined
+const windows = process.platform === 'win32'
 
-var argv = process.argv[1] || /* c8 ignore next */ ''
-var nvm = process.env.NVM_BIN
-var appData = process.env.APPDATA
+const argv = process.argv[1] || /* c8 ignore next */ ''
+const nvm = process.env.NVM_BIN
+const appData = process.env.APPDATA
 
 /* c8 ignore next */
-var globalsLibrary = windows ? '' : 'lib'
+const globalsLibrary = windows ? '' : 'lib'
 
 /** @type {{prefix?: string}} */
-var builtinNpmConfig
+let builtinNpmConfig
 
 // The prefix config defaults to the location where node is installed.
 // On Windows, this is in a place called `%AppData%`, which we have to
@@ -40,7 +41,7 @@ if (windows && appData) {
  * Either `libnpmconfig` will switch to an alternative or we’ll have to.
  * @type {string}
  */
-var npmPrefix = libNpmConfig.read(null, builtinNpmConfig).prefix
+let npmPrefix = libNpmConfig.read(null, builtinNpmConfig).prefix
 
 // If there is no prefix defined, use the defaults
 // See: <https://github.com/eush77/npm-prefix/blob/master/index.js>
@@ -51,8 +52,8 @@ if (!npmPrefix) {
     : path.resolve(process.execPath, '../..')
 }
 
-var globalsDefault = electron || argv.indexOf(npmPrefix) === 0
-var globalDir = path.resolve(npmPrefix, globalsLibrary, 'node_modules')
+const globalsDefault = electron || argv.indexOf(npmPrefix) === 0
+let globalDir = path.resolve(npmPrefix, globalsLibrary, 'node_modules')
 
 // If we’re in Electron, we’re running in a modified Node that cannot really
 // install global node modules.
@@ -75,10 +76,13 @@ if (electron && nvm && !fs.existsSync(globalDir)) {
  * @returns {Promise<unknown>}
  */
 export async function loadPlugin(name, options = {}) {
-  var {key = 'default', ...rest} = options
-  var fp = await resolvePlugin(name, rest)
+  const {key = 'default', ...rest} = options
+  const fp = await resolvePlugin(name, rest)
+  console.log('resolved:', [name, fp, pathToFileURL(fp).href])
   /** @type {Object.<string, unknown>} */
-  var mod = await import(fp || name)
+  // Bug with coverage on Node@12.
+  /* c8 ignore next 3 */
+  const mod = await import(pathToFileURL(fp).href)
   return key === false ? mod : mod[key]
 }
 
@@ -97,23 +101,23 @@ export async function loadPlugin(name, options = {}) {
  *
  * @param {string} name
  * @param {ResolveOptions} [options]
- * @returns {Promise.<string|null>}
+ * @returns {Promise.<string>}
  */
 export async function resolvePlugin(name, options = {}) {
-  var prefix = options.prefix
-  var cwd = options.cwd
-  var globals =
+  const prefix = options.prefix
+    ? options.prefix +
+      (options.prefix.charAt(options.prefix.length - 1) === '-' ? '' : '-')
+    : undefined
+  const cwd = options.cwd
+  const globals =
     options.global === undefined || options.global === null
       ? globalsDefault
       : options.global
-  var scope = ''
-  var sources = Array.isArray(cwd) ? cwd.concat() : [cwd || process.cwd()]
+  const sources = Array.isArray(cwd) ? cwd.concat() : [cwd || process.cwd()]
   /** @type {string} */
-  var plugin
-  /** @type {number} */
-  var slash
-  /** @type {Array.<[string, string]>} */
-  var tries = []
+  let plugin
+  /** @type {Error} */
+  let lastError
 
   // Non-path.
   if (name.charAt(0) !== '.') {
@@ -121,13 +125,13 @@ export async function resolvePlugin(name, options = {}) {
       sources.push(globalDir)
     }
 
+    let scope = ''
+
     // Unprefix module.
     if (prefix) {
-      prefix = prefix.charAt(prefix.length - 1) === '-' ? prefix : prefix + '-'
-
       // Scope?
       if (name.charAt(0) === '@') {
-        slash = name.indexOf('/')
+        const slash = name.indexOf('/')
 
         // Let’s keep the algorithm simple.
         // No need to care if this is a “valid” scope (I think?).
@@ -146,28 +150,40 @@ export async function resolvePlugin(name, options = {}) {
     }
   }
 
-  var index = -1
+  let index = -1
+  /** @type {string} */
+  let fp
+
   while (++index < sources.length) {
-    if (plugin) tries.push([sources[index], plugin])
-    tries.push([sources[index], name])
+    fp = plugin && (await attempt(sources[index], plugin))
+    if (fp) return fp
+
+    fp = await attempt(sources[index], name)
+    if (fp) return fp
   }
 
-  return new Promise(executor)
+  // There’s always an error.
+  // Bug with coverage on Node@12.
+  /* c8 ignore next 8 */
+  throw lastError
 
   /**
-   * @param {(value: string) => void} resolve
-   * @param {(reason: Error) => void} reject
+   * @param {string} base
+   * @param {string} name
+   * @returns {Promise<string>}
    */
-  function executor(resolve, reject) {
-    var attempt = tries.shift()
-    var fp = resolveFrom.silent(attempt[0], attempt[1])
-
-    if (fp) {
-      resolve(fp)
-    } else if (tries.length === 0) {
-      resolve(null)
-    } else {
-      executor(resolve, reject)
+  async function attempt(base, name) {
+    try {
+      console.log('try:', [name, base, pathToFileURL(base).href + '/'])
+      // `import-meta-resolve` resolves from files, whereas `load-plugin` works
+      // on folders, which is why we add a `/` at the end.
+      return fileURLToPath(
+        await esmResolve(name, pathToFileURL(base).href + '/')
+      )
+      // Bug with coverage on Node@12.
+      /* c8 ignore next 1 */
+    } catch (error) {
+      lastError = error
     }
   }
 }

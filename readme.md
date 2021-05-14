@@ -26,17 +26,21 @@ Say we’re in this project (with dependencies installed):
 ```js
 import {loadPlugin, resolvePlugin} from 'load-plugin'
 
-await resolvePlugin('lint', {prefix: 'remark'})
-// => '/Users/tilde/projects/oss/load-plugin/node_modules/remark-lint/index.js'
+main()
 
-await resolvePlugin('@babel/function-name', {prefix: 'helper'})
-// => '/Users/tilde/projects/oss/load-plugin/node_modules/@babel/helper-function-name/index.js'
+async function main() {
+  await resolvePlugin('lint', {prefix: 'remark'})
+  // => '/Users/tilde/projects/oss/load-plugin/node_modules/remark-lint/index.js'
 
-await resolvePlugin('./index.js', {prefix: 'remark'})
-// => '/Users/tilde/projects/oss/load-plugin/index.js'
+  await resolvePlugin('@babel/function-name', {prefix: 'helper'})
+  // => '/Users/tilde/projects/oss/load-plugin/node_modules/@babel/helper-function-name/lib/index.js'
 
-await loadPlugin('lint', {prefix: 'remark'})
-// => [Function: lint]
+  await resolvePlugin('./index.js', {prefix: 'remark'})
+  // => '/Users/tilde/projects/oss/load-plugin/index.js'
+
+  await loadPlugin('lint', {prefix: 'remark'})
+  // => [Function: lint]
+}
 ```
 
 ## API
@@ -46,13 +50,15 @@ There is no default export.
 
 ### `loadPlugin(name[, options])`
 
-Uses the standard node module loading strategy to require `name` in each given
-`cwd` (and optionally the global `node_modules` directory).
+Uses Node’s [resolution algorithm][algo] (through
+[`import-meta-resolve`][import-meta-resolve]) to load CJS and ESM packages and
+files to import `name` in each given `cwd` (and optionally the global
+`node_modules` directory).
 
-If a prefix is given and `name` is not a path, `prefix-name` is also searched
-(preferring these over non-prefixed modules).
-If name starts with a scope (`@scope/name`), the prefix is applied after it:
-`@scope/prefix-name`.
+If a `prefix` is given and `name` is not a path, `$prefix-$name` is also
+searched (preferring these over non-prefixed modules).
+If `name` starts with a scope (`@scope/name`), the prefix is applied after it:
+`@scope/$prefix-name`.
 
 ##### `options`
 
@@ -94,11 +100,10 @@ path exists.
 ### `loadPlugin.resolve(name[, options])`
 
 Search for `name`.
-Accepts the same parameters as [`loadPlugin`][load-plugin] but returns a promise
-resolving to an absolute path for `name` instead of requiring it or `null` if it
-cannot be found.
-
-Resolve does not take `key` option.
+Accepts the same parameters as [`loadPlugin`][load-plugin] (except `key`) but
+returns a promise resolving to an absolute path for `name` instead of importing
+it.
+Throws if `name` cannot be found.
 
 ## License
 
@@ -133,3 +138,7 @@ Resolve does not take `key` option.
 [set-up]: https://github.com/sindresorhus/guides/blob/master/npm-global-without-sudo.md
 
 [nvm]: https://github.com/creationix/nvm
+
+[algo]: https://nodejs.org/api/esm.html#esm_resolution_algorithm
+
+[import-meta-resolve]: https://github.com/wooorm/import-meta-resolve
