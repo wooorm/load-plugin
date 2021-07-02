@@ -17,7 +17,6 @@ test('loadPlugin(name[, options])', async (t) => {
     t.pass('should throw when not given `name`')
   }
 
-  console.log('__dirname:', __dirname)
   t.equals(
     await loadPlugin('delta', {cwd: __dirname, prefix: 'charlie'}),
     'echo',

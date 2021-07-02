@@ -78,7 +78,6 @@ if (electron && nvm && !fs.existsSync(globalDir)) {
 export async function loadPlugin(name, options = {}) {
   const {key = 'default', ...rest} = options
   const fp = await resolvePlugin(name, rest)
-  console.log('resolved:', [name, fp, pathToFileURL(fp).href])
   /** @type {Object.<string, unknown>} */
   // Bug with coverage on Node@12.
   /* c8 ignore next 3 */
@@ -174,7 +173,6 @@ export async function resolvePlugin(name, options = {}) {
    */
   async function attempt(base, name) {
     try {
-      console.log('try:', [name, base, pathToFileURL(base).href + '/'])
       // `import-meta-resolve` resolves from files, whereas `load-plugin` works
       // on folders, which is why we add a `/` at the end.
       return fileURLToPath(
