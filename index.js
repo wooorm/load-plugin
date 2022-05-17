@@ -3,9 +3,7 @@
  * @property {string} [prefix]
  * @property {string|Array<string>} [cwd]
  * @property {boolean} [global]
- */
-
-/**
+ *
  * @typedef {ResolveOptions & {key?: string|false}} LoadOptions
  */
 
@@ -14,6 +12,7 @@ import process from 'process'
 import {pathToFileURL, fileURLToPath} from 'url'
 import path from 'path'
 import {resolve as esmResolve} from 'import-meta-resolve'
+// @ts-expect-error: untyped
 import libNpmConfig from 'libnpmconfig'
 
 const electron = process.versions.electron !== undefined
@@ -26,7 +25,7 @@ const appData = process.env.APPDATA
 /* c8 ignore next */
 const globalsLibrary = windows ? '' : 'lib'
 
-/** @type {{prefix?: string}} */
+/** @type {{prefix?: string}|undefined} */
 let builtinNpmConfig
 
 // The prefix config defaults to the location where node is installed.
@@ -114,9 +113,9 @@ export async function resolvePlugin(name, options = {}) {
       ? globalsDefault
       : options.global
   const sources = Array.isArray(cwd) ? cwd.concat() : [cwd || process.cwd()]
-  /** @type {string} */
+  /** @type {string|undefined} */
   let plugin
-  /** @type {Error} */
+  /** @type {Error|undefined} */
   let lastError
 
   // Non-path.
@@ -151,11 +150,11 @@ export async function resolvePlugin(name, options = {}) {
   }
 
   let index = -1
-  /** @type {string} */
+  /** @type {string|undefined} */
   let fp
 
   while (++index < sources.length) {
-    fp = plugin && (await attempt(sources[index], plugin))
+    fp = plugin ? await attempt(sources[index], plugin) : undefined
     if (fp) return fp
 
     fp = await attempt(sources[index], name)
@@ -170,7 +169,7 @@ export async function resolvePlugin(name, options = {}) {
   /**
    * @param {string} base
    * @param {string} name
-   * @returns {Promise<string>}
+   * @returns {Promise<string|undefined>}
    */
   async function attempt(base, name) {
     try {
@@ -182,7 +181,7 @@ export async function resolvePlugin(name, options = {}) {
       // Bug with coverage on Node@12.
       /* c8 ignore next 1 */
     } catch (error) {
-      lastError = error
+      lastError = /** @type {Error} */ (error)
     }
   }
 }

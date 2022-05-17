@@ -2,6 +2,7 @@ import {fileURLToPath} from 'url'
 import path from 'path'
 import process from 'process'
 import test from 'tape'
+// @ts-expect-error: untyped
 // eslint-disable-next-line node/file-extension-in-import
 import testTest from 'tape/lib/test'
 import lint from '../node_modules/remark-lint/index.js'
@@ -122,8 +123,12 @@ test('loadPlugin(name[, options])', async (t) => {
     )
   }
 
+  const main = /** @type {object} */ (
+    await loadPlugin('./index.js', {key: false})
+  )
+
   t.deepEquals(
-    Object.keys(await loadPlugin('./index.js', {key: false})),
+    Object.keys(main),
     ['loadPlugin', 'resolvePlugin'],
     'should support `key: false`'
   )
