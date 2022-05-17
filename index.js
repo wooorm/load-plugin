@@ -10,6 +10,7 @@
  */
 
 import fs from 'fs'
+import process from 'process'
 import {pathToFileURL, fileURLToPath} from 'url'
 import path from 'path'
 import {resolve as esmResolve} from 'import-meta-resolve'

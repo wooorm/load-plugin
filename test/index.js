@@ -1,5 +1,6 @@
 import {fileURLToPath} from 'url'
 import path from 'path'
+import process from 'process'
 import test from 'tape'
 // eslint-disable-next-line node/file-extension-in-import
 import testTest from 'tape/lib/test'
