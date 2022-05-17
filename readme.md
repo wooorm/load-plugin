@@ -68,7 +68,7 @@ Prefix to search for (`string`, optional).
 
 ###### `options.cwd`
 
-Place or places to search from (`string`, `Array.<string>`, default:
+Place or places to search from (`string`, `Array<string>`, default:
 `process.cwd()`).
 
 ###### `options.global`
@@ -92,7 +92,7 @@ used, and when `false` the whole module object is returned.
 
 ###### Returns
 
-`Promise.<unknown>` — Promise yielding the results of `require`ing the first
+`Promise<unknown>` — Promise yielding the results of `require`ing the first
 path that exists.
 The promise rejects if `require`ing an existing path fails, or if no existing
 path exists.

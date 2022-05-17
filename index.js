@@ -1,7 +1,7 @@
 /**
  * @typedef ResolveOptions
  * @property {string} [prefix]
- * @property {string|string[]} [cwd]
+ * @property {string|Array<string>} [cwd]
  * @property {boolean} [global]
  */
 
@@ -79,7 +79,7 @@ if (electron && nvm && !fs.existsSync(globalDir)) {
 export async function loadPlugin(name, options = {}) {
   const {key = 'default', ...rest} = options
   const fp = await resolvePlugin(name, rest)
-  /** @type {Object.<string, unknown>} */
+  /** @type {Record<string, unknown>} */
   // Bug with coverage on Node@12.
   /* c8 ignore next 3 */
   const mod = await import(pathToFileURL(fp).href)
@@ -101,7 +101,7 @@ export async function loadPlugin(name, options = {}) {
  *
  * @param {string} name
  * @param {ResolveOptions} [options]
- * @returns {Promise.<string>}
+ * @returns {Promise<string>}
  */
 export async function resolvePlugin(name, options = {}) {
   const prefix = options.prefix
