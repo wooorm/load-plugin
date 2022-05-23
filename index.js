@@ -44,7 +44,7 @@ config.loadGlobalPrefix()
 
 /** @type {string} */
 let npmPrefix = config.globalPrefix
-// Console.log('aaa', );
+console.log('aaa', [npmPrefix]);
 
 // If there is no prefix defined, use the defaults
 // See: <https://github.com/eush77/npm-prefix/blob/master/index.js>
