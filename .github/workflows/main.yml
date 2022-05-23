@@ -2,11 +2,11 @@ on:
   - pull_request
   - push
 jobs:
-  main:
-    name: '${{matrix.node}} on ${{matrix.os}}'
+  nvm:
+    name: '${{matrix.node}} on ${{matrix.os}}: nvm'
     runs-on: ${{matrix.os}}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: dcodeIO/setup-node-nvm@master
         with:
           node-version: ${{matrix.node}}
@@ -21,3 +21,22 @@ jobs:
         node:
           - lts/erbium
           - lts/gallium
+
+no-nvm:
+  name: '${{matrix.node}} on ${{matrix.os}}: no nvm'
+  runs-on: ${{matrix.os}}
+  steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: ${{matrix.node}}
+    - run: npm install
+    - run: npm test-coverage
+  strategy:
+    matrix:
+      os:
+        - ubuntu-latest
+        - windows-latest
+      node:
+        - 12
+        - 16
