@@ -3,7 +3,7 @@ on:
   - push
 jobs:
   full:
-    name: 'full build'
+    name: main
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -14,7 +14,7 @@ jobs:
       - run: npm test
       - uses: codecov/codecov-action@v1
   nvm:
-    name: '${{matrix.node}} on ${{matrix.os}}: nvm'
+    name: '${{matrix.node}} on ${{matrix.os}} w/ nvm'
     runs-on: ${{matrix.os}}
     steps:
       - uses: actions/checkout@v3
@@ -33,7 +33,7 @@ jobs:
           - lts/erbium
           - lts/gallium
   no-nvm:
-    name: '${{matrix.node}} on ${{matrix.os}}: no nvm'
+    name: '${{matrix.node}} on ${{matrix.os}} w/o nvm'
     runs-on: ${{matrix.os}}
     steps:
       - uses: actions/checkout@v3
