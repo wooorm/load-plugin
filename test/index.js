@@ -211,7 +211,7 @@ test('loadPlugin(name[, options])', async (t) => {
   }
 
   try {
-    const result = await loadPlugin('npm', {global: true})
+    await loadPlugin('npm', {global: true})
   } catch (error) {
     t.match(
       String(error),
