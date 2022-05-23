@@ -216,7 +216,7 @@ test('loadPlugin(name[, options])', async (t) => {
     t.match(
       String(error),
       /The programmatic API was removed/,
-      'supports loading global packages'
+      'supports loading global packages (npm)'
     )
   }
 
