@@ -2,7 +2,7 @@ on:
   - pull_request
   - push
 jobs:
-  nvm:
+  full:
     name: 'full build'
     runs-on: ubuntu-latest
     steps:
