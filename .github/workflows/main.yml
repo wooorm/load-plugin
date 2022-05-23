@@ -30,7 +30,7 @@ jobs:
         with:
           node-version: ${{matrix.node}}
       - run: npm install
-      - run: npm test-coverage
+      - run: npm run test-coverage
     strategy:
       matrix:
         os:
