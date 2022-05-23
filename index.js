@@ -25,26 +25,12 @@ const nvm = process.env.NVM_BIN
 /* c8 ignore next */
 const globalsLibrary = windows ? '' : 'lib'
 
-// To do: is this still needed?
-// /** @type {{prefix?: string}|undefined} */
-// let builtinNpmConfig
-//
-// // The prefix config defaults to the location where node is installed.
-// // On Windows, this is in a place called `%AppData%`, which we have to
-// // pass to `libnpmconfig` explicitly:
-// /* c8 ignore next 4 */
-// if (windows && appData) {
-//   builtinNpmConfig = {prefix: path.join(appData, 'npm')}
-// }
-
-// let npmPrefix = libNpmConfig.read(null, builtinNpmConfig).prefix
 const config = new NpmConfig({definitions: {}})
 
 config.loadGlobalPrefix()
 
 /** @type {string} */
 let npmPrefix = config.globalPrefix
-console.log('aaa', [npmPrefix])
 
 // If there is no prefix defined, use the defaults
 // See: <https://github.com/eush77/npm-prefix/blob/master/index.js>
