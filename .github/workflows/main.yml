@@ -3,6 +3,17 @@ on:
   - push
 jobs:
   nvm:
+    name: 'full build'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dcodeIO/setup-node-nvm@master
+        with:
+          node-version: lts/gallium
+      - run: npm install
+      - run: npm test
+      - uses: codecov/codecov-action@v1
+  nvm:
     name: '${{matrix.node}} on ${{matrix.os}}: nvm'
     runs-on: ${{matrix.os}}
     steps:
@@ -11,13 +22,13 @@ jobs:
         with:
           node-version: ${{matrix.node}}
       - run: npm install
-      - run: npm test
-      - uses: codecov/codecov-action@v1
+      - run: npm run test-coverage
     strategy:
       matrix:
         os:
           - ubuntu-latest
           - windows-latest
+          - macos-latest
         node:
           - lts/erbium
           - lts/gallium
@@ -36,6 +47,7 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
+          - macos-latest
         node:
           - 12
           - 16
