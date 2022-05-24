@@ -4,16 +4,40 @@
 [![Coverage][coverage-badge]][coverage]
 [![Downloads][downloads-badge]][downloads]
 
-Load a submodule, plugin, or file.
-Like Node’s `require` and `require.resolve`, but from one or more places, and
-optionally global too.
+Load submodules, plugins, or files.
+
+## Contents
+
+*   [What is this?](#what-is-this)
+*   [When to use this?](#when-to-use-this)
+*   [Install](#install)
+*   [Use](#use)
+*   [API](#api)
+    *   [`loadPlugin(name[, options])`](#loadpluginname-options)
+    *   [`resolvePlugin(name[, options])`](#resolvepluginname-options)
+*   [Types](#types)
+*   [Compatibility](#compatibility)
+*   [Contribute](#contribute)
+*   [License](#license)
+
+## What is this?
+
+This package is useful when you want to load plugins.
+It resolves things like Node.js does, but supports a prefix (e.g., when given a
+prefix `remark` and the user provided value `gfm`, it can find `remark-gfm`),
+can load from several places, and optionally global too.
+
+## When to use this?
+
+This package is particularly useful when you want users to configure something
+with plugins.
+One example is `remark-cli` which can load remark plugins from configuration
+files.
 
 ## Install
 
-This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c):
-Node 12+ is needed to use it and it must be `import`ed instead of `require`d.
-
-[npm][]:
+This package is [ESM only][esm].
+In Node.js (version 14.14+, 16.0+, or 18.0+), install with [npm][]:
 
 ```sh
 npm install load-plugin
@@ -26,26 +50,22 @@ Say we’re in this project (with dependencies installed):
 ```js
 import {loadPlugin, resolvePlugin} from 'load-plugin'
 
-main()
+console.log(await resolvePlugin('lint', {prefix: 'remark'}))
+// => '/Users/tilde/projects/oss/load-plugin/node_modules/remark-lint/index.js'
 
-async function main() {
-  await resolvePlugin('lint', {prefix: 'remark'})
-  // => '/Users/tilde/projects/oss/load-plugin/node_modules/remark-lint/index.js'
+console.log(await resolvePlugin('validator-identifier', {prefix: '@babel/helper'}))
+// => '/Users/tilde/Projects/oss/load-plugin/node_modules/@babel/helper-validator-identifier/lib/index.js'
 
-  await resolvePlugin('@babel/function-name', {prefix: 'helper'})
-  // => '/Users/tilde/projects/oss/load-plugin/node_modules/@babel/helper-function-name/lib/index.js'
+console.log(await resolvePlugin('./index.js', {prefix: 'remark'}))
+// => '/Users/tilde/projects/oss/load-plugin/index.js'
 
-  await resolvePlugin('./index.js', {prefix: 'remark'})
-  // => '/Users/tilde/projects/oss/load-plugin/index.js'
-
-  await loadPlugin('lint', {prefix: 'remark'})
-  // => [Function: lint]
-}
+console.log(await loadPlugin('lint', {prefix: 'remark'}))
+// => [Function: remarkLint]
 ```
 
 ## API
 
-This package exports the following identifiers: `loadPlugin`, `resolvePlugin`.
+This package exports the identifiers `loadPlugin` and `resolvePlugin`.
 There is no default export.
 
 ### `loadPlugin(name[, options])`
@@ -61,6 +81,8 @@ If `name` starts with a scope (`@scope/name`), the prefix is applied after it:
 `@scope/$prefix-name`.
 
 ##### `options`
+
+Configuration (optional).
 
 ###### `options.prefix`
 
@@ -92,18 +114,33 @@ used, and when `false` the whole module object is returned.
 
 ###### Returns
 
-`Promise<unknown>` — Promise yielding the results of `require`ing the first
-path that exists.
-The promise rejects if `require`ing an existing path fails, or if no existing
+Promise yielding the results of importing the first path that exists
+(`Promise<unknown>`).
+The promise rejects if importing an existing path fails, or if no existing
 path exists.
 
 ### `resolvePlugin(name[, options])`
 
 Search for `name`.
 Accepts the same parameters as [`loadPlugin`][load-plugin] (except `key`) but
-returns a promise resolving to an absolute path for `name` instead of importing
-it.
+returns a promise resolving to an absolute URL (`string`) for `name` instead of
+importing it.
 Throws if `name` cannot be found.
+
+## Types
+
+This package is fully typed with [TypeScript][].
+It exports the additional types `ResolveOptions` and `LoadOptions`.
+
+## Compatibility
+
+This package is at least compatible with all maintained versions of Node.js.
+As of now, that is Node.js 14.14+, 16.0+, and 18.0+.
+
+## Contribute
+
+Yes please!
+See [How to Contribute to Open Source][contribute].
 
 ## License
 
@@ -129,9 +166,13 @@ Throws if `name` cannot be found.
 
 [author]: https://wooorm.com
 
-[global]: https://docs.npmjs.com/files/folders#node-modules
+[esm]: https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
 
-[load-plugin]: #loadpluginname-options
+[typescript]: https://www.typescriptlang.org
+
+[contribute]: https://opensource.guide/how-to-contribute/
+
+[global]: https://docs.npmjs.com/files/folders#node-modules
 
 [prefix]: https://docs.npmjs.com/misc/config#prefix
 
@@ -142,3 +183,5 @@ Throws if `name` cannot be found.
 [algo]: https://nodejs.org/api/esm.html#esm_resolution_algorithm
 
 [import-meta-resolve]: https://github.com/wooorm/import-meta-resolve
+
+[load-plugin]: #loadpluginname-options
