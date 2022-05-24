@@ -28,8 +28,8 @@
     "index.js"
   ],
   "dependencies": {
-    "import-meta-resolve": "^2.0.0",
-    "libnpmconfig": "^1.0.0"
+    "@npmcli/config": "^4.0.0",
+    "import-meta-resolve": "^2.0.0"
   },
   "devDependencies": {
     "@types/tape": "^4.0.0",

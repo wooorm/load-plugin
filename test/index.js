@@ -188,7 +188,6 @@ test('loadPlugin(name[, options])', async (t) => {
 
   // Global: `$modules/$plugin` is untestable
 
-  // Also tests `global: true`.
   try {
     await loadPlugin('does not exist', {global: true, prefix: 'this'})
     t.fail()
@@ -208,6 +207,16 @@ test('loadPlugin(name[, options])', async (t) => {
       String(error),
       /Invalid module "@foxtrot" is not a valid package name/,
       'throws for just a scope'
+    )
+  }
+
+  try {
+    await loadPlugin('npm', {global: true})
+  } catch (error) {
+    t.match(
+      String(error),
+      /The programmatic API was removed/,
+      'supports loading global packages (npm)'
     )
   }
 

@@ -11,37 +11,25 @@ import fs from 'fs'
 import process from 'process'
 import {pathToFileURL, fileURLToPath} from 'url'
 import path from 'path'
-import {resolve as esmResolve} from 'import-meta-resolve'
 // @ts-expect-error: untyped
-import libNpmConfig from 'libnpmconfig'
+import NpmConfig from '@npmcli/config'
+import {resolve as esmResolve} from 'import-meta-resolve'
 
 const electron = process.versions.electron !== undefined
 const windows = process.platform === 'win32'
 
 const argv = process.argv[1] || /* c8 ignore next */ ''
 const nvm = process.env.NVM_BIN
-const appData = process.env.APPDATA
 
 /* c8 ignore next */
 const globalsLibrary = windows ? '' : 'lib'
 
-/** @type {{prefix?: string}|undefined} */
-let builtinNpmConfig
+const config = new NpmConfig({definitions: {}})
 
-// The prefix config defaults to the location where node is installed.
-// On Windows, this is in a place called `%AppData%`, which we have to
-// pass to `libnpmconfig` explicitly:
-/* c8 ignore next 4 */
-if (windows && appData) {
-  builtinNpmConfig = {prefix: path.join(appData, 'npm')}
-}
+config.loadGlobalPrefix()
 
-/**
- * Note: `libnpmconfig` uses `figgy-pudding` which is slated for archival.
- * Either `libnpmconfig` will switch to an alternative or we’ll have to.
- * @type {string}
- */
-let npmPrefix = libNpmConfig.read(null, builtinNpmConfig).prefix
+/** @type {string} */
+let npmPrefix = config.globalPrefix
 
 // If there is no prefix defined, use the defaults
 // See: <https://github.com/eush77/npm-prefix/blob/master/index.js>
