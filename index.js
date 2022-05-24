@@ -20,7 +20,6 @@ const windows = process.platform === 'win32'
 
 const argv = process.argv[1] || /* c8 ignore next */ ''
 const nvm = process.env.NVM_BIN
-// Const appData = process.env.APPDATA
 
 /* c8 ignore next */
 const globalsLibrary = windows ? '' : 'lib'
