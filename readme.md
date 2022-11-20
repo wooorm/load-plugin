@@ -37,7 +37,7 @@ files.
 ## Install
 
 This package is [ESM only][esm].
-In Node.js (version 14.14+, 16.0+, or 18.0+), install with [npm][]:
+In Node.js (version 14.14+, 16.0+), install with [npm][]:
 
 ```sh
 npm install load-plugin
@@ -135,7 +135,8 @@ It exports the additional types `ResolveOptions` and `LoadOptions`.
 ## Compatibility
 
 This package is at least compatible with all maintained versions of Node.js.
-As of now, that is Node.js 14.14+, 16.0+, and 18.0+.
+As of now, that is Node.js 14.14+ and 16.0+.
+It also works in Deno and modern browsers.
 
 ## Contribute
 
