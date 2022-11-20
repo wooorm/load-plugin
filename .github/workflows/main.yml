@@ -31,7 +31,6 @@ jobs:
           - macos-latest
         node:
           - lts/hydrogen
-          - node
   no-nvm:
     name: '${{matrix.node}} on ${{matrix.os}} w/o nvm'
     runs-on: ${{matrix.os}}
