@@ -2,9 +2,8 @@ import {fileURLToPath} from 'url'
 import path from 'path'
 import process from 'process'
 import test from 'tape'
-// @ts-expect-error: untyped
-// eslint-disable-next-line node/file-extension-in-import
-import testTest from 'tape/lib/test'
+
+import {stream} from 'micromark/stream.js'
 import lint from '../node_modules/remark-lint/index.js'
 import {resolvePlugin, loadPlugin} from '../index.js'
 
@@ -140,8 +139,8 @@ test('loadPlugin(name[, options])', async (t) => {
   )
 
   t.deepEquals(
-    await loadPlugin('tape/lib/test'),
-    testTest,
+    await loadPlugin('micromark/stream', {key: 'stream'}),
+    stream,
     'should look for `$root/node_modules/$name$rest` where $rest is a path'
   )
 
