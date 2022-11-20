@@ -2,8 +2,6 @@ import {fileURLToPath} from 'url'
 import path from 'path'
 import process from 'process'
 import test from 'tape'
-
-import {stream} from 'micromark/stream.js'
 import lint from '../node_modules/remark-lint/index.js'
 import {resolvePlugin, loadPlugin} from '../index.js'
 
@@ -138,9 +136,9 @@ test('loadPlugin(name[, options])', async (t) => {
     'should look for `$root/node_modules/$name`'
   )
 
-  t.deepEquals(
-    await loadPlugin('micromark/stream', {key: 'stream'}),
-    stream,
+  t.equal(
+    typeof (await loadPlugin('micromark/stream', {key: 'stream'})),
+    'function',
     'should look for `$root/node_modules/$name$rest` where $rest is a path'
   )
 
