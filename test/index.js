@@ -1,237 +1,299 @@
+import assert from 'node:assert/strict'
 import {fileURLToPath} from 'node:url'
 import path from 'node:path'
 import process from 'node:process'
-import assert from 'node:assert/strict'
 import test from 'node:test'
-import lint from '../node_modules/remark-lint/index.js'
-import {resolvePlugin, loadPlugin} from '../index.js'
+// Get the real one, not the fake one from our `test/node_modules/`.
+import remarkLint from '../node_modules/remark-lint/index.js'
+import {loadPlugin, resolvePlugin} from '../index.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-test('loadPlugin(name[, options])', async () => {
-  try {
-    // @ts-expect-error runtime.
-    await loadPlugin()
-    assert.fail()
-  } catch {}
+test('core', async function (t) {
+  await t.test('should expose the public api', async function () {
+    assert.deepEqual(Object.keys(await import('../index.js')).sort(), [
+      'loadPlugin',
+      'resolvePlugin'
+    ])
+  })
+})
 
-  assert.equal(
-    await loadPlugin('delta', {cwd: __dirname, prefix: 'charlie'}),
-    'echo',
-    'should look for `$cwd/node_modules/$prefix-$name`'
+test('loadPlugin', async function (t) {
+  await t.test('should fail w/o argument', async function () {
+    try {
+      // @ts-expect-error: check how the runtime handles a missing specifier.
+      await loadPlugin()
+      assert.fail()
+    } catch (error) {
+      assert.match(String(error), /Cannot read properties of undefined/)
+    }
+  })
+
+  await t.test(
+    'should look for `$cwd/node_modules/$prefix-$name`',
+    async function () {
+      assert.equal(
+        await loadPlugin('delta', {cwd: __dirname, prefix: 'charlie'}),
+        'echo'
+      )
+    }
   )
 
-  assert.equal(
-    await loadPlugin('delta/another.js', {cwd: __dirname, prefix: 'charlie'}),
-    'another',
-    'should look for `$cwd/node_modules/$prefix-$name$rest` where $rest is a path'
+  await t.test(
+    'should look for `$cwd/node_modules/$prefix-$name$rest` where $rest is a path',
+    async function () {
+      assert.equal(
+        await loadPlugin('delta/another.js', {
+          cwd: __dirname,
+          prefix: 'charlie'
+        }),
+        'another'
+      )
+    }
   )
 
-  assert.equal(
-    await loadPlugin('delta/another.js', {cwd: __dirname, prefix: 'charlie'}),
-    'another',
-    'should look for `$cwd/node_modules/$prefix-$name$rest` where $rest is a path'
+  await t.test(
+    'should look for `$cwd/node_modules/$prefix-$name$rest` where $rest is a path',
+    async function () {
+      assert.equal(
+        await loadPlugin('delta/another.js', {
+          cwd: __dirname,
+          prefix: 'charlie'
+        }),
+        'another'
+      )
+    }
   )
 
-  assert.equal(
-    await loadPlugin('@foxtrot/hotel', {cwd: __dirname, prefix: 'golf'}),
-    'india',
-    'should look for `$cwd/node_modules/$scope/$prefix-$name` if a scope is given'
+  await t.test(
+    'should look for `$cwd/node_modules/$scope/$prefix-$name` if a scope is given',
+    async function () {
+      assert.equal(
+        await loadPlugin('@foxtrot/hotel', {cwd: __dirname, prefix: 'golf'}),
+        'india'
+      )
+    }
   )
 
-  assert.equal(
-    await loadPlugin('@foxtrot/hotel/other.js', {
-      cwd: __dirname,
-      prefix: 'golf'
-    }),
-    'other',
-    'should look for `$cwd/node_modules/$scope/$prefix-$name$rest` if a scope is given and $rest is a path'
+  await t.test(
+    'should look for `$cwd/node_modules/$scope/$prefix-$name$rest` if a scope is given and $rest is a path',
+    async function () {
+      assert.equal(
+        await loadPlugin('@foxtrot/hotel/other.js', {
+          cwd: __dirname,
+          prefix: 'golf'
+        }),
+        'other'
+      )
+    }
   )
 
-  assert.equal(
-    await loadPlugin('lint', {prefix: 'remark'}),
-    lint,
-    'should look for `$root/node_modules/$prefix-$name`'
+  await t.test(
+    'should look for `$root/node_modules/$prefix-$name`',
+    async function () {
+      assert.equal(await loadPlugin('lint', {prefix: 'remark'}), remarkLint)
+    }
   )
 
-  assert.deepEqual(
-    await loadPlugin('lint/index.js', {prefix: 'remark'}),
-    lint,
-    'should look for `$root/node_modules/$prefix-$name$rest` where $rest is a path'
+  await t.test(
+    'should look for `$root/node_modules/$prefix-$name$rest` where $rest is a path',
+    async function () {
+      assert.deepEqual(
+        await loadPlugin('lint/index.js', {prefix: 'remark'}),
+        remarkLint
+      )
+    }
   )
 
-  try {
-    await loadPlugin('lint/index', {prefix: 'remark'})
-    assert.fail()
-  } catch (error) {
-    assert.match(
-      String(error),
-      /Cannot find package 'lint'/,
-      'throws if a path cannot be found'
-    )
-  }
+  await t.test('should throw if a path cannot be found', async function () {
+    try {
+      await loadPlugin('lint/index', {prefix: 'remark'})
+      assert.fail()
+    } catch (error) {
+      assert.match(String(error), /Cannot find package 'lint'/)
+    }
+  })
 
-  assert.equal(
-    await loadPlugin('remark-lint', {prefix: 'remark'}),
-    lint,
-    'should not duplicate `$root/node_modules/$prefix-$prefix-$name`'
+  await t.test(
+    'should not duplicate `$root/node_modules/$prefix-$prefix-$name`',
+    async function () {
+      assert.equal(
+        await loadPlugin('remark-lint', {prefix: 'remark'}),
+        remarkLint
+      )
+    }
   )
 
-  assert.equal(
-    await loadPlugin('@foxtrot/golf-hotel', {cwd: __dirname, prefix: 'golf'}),
-    'india',
-    'should not duplicate `$cwd/node_modules/$scope/$prefix-$prefix-$name` if a scope is given'
+  await t.test(
+    'should not duplicate `$cwd/node_modules/$scope/$prefix-$prefix-$name` if a scope is given',
+    async function () {
+      assert.equal(
+        await loadPlugin('@foxtrot/golf-hotel', {
+          cwd: __dirname,
+          prefix: 'golf'
+        }),
+        'india'
+      )
+    }
   )
 
-  assert.equal(
-    await loadPlugin('lint', {prefix: 'remark-'}),
-    lint,
-    'should support a dash in `$prefix`'
-  )
+  await t.test('should support a dash in `$prefix`', async function () {
+    assert.equal(await loadPlugin('lint', {prefix: 'remark-'}), remarkLint)
+  })
 
   // Global: `$modules/$plugin` is untestable.
 
-  assert.equal(
-    await loadPlugin('./index.js', {key: 'loadPlugin'}),
-    loadPlugin,
-    'should look for `./index.js`'
-  )
-
-  try {
-    await loadPlugin('./index', {key: 'loadPlugin'})
-    assert.fail()
-  } catch (error) {
-    assert.match(
-      String(error),
-      /Cannot find module/,
-      'throws if passing a path w/o extension'
+  await t.test('should look for `./index.js`', async function () {
+    assert.equal(
+      await loadPlugin('./index.js', {key: 'loadPlugin'}),
+      loadPlugin
     )
-  }
+  })
 
-  try {
-    await loadPlugin('./', {key: 'loadPlugin'})
-    assert.fail()
-  } catch (error) {
-    assert.match(
-      String(error),
-      /Directory import/,
-      'throws if passing a path to a directory'
+  await t.test(
+    'should throw if passing a path w/o extension',
+    async function () {
+      try {
+        await loadPlugin('./index', {key: 'loadPlugin'})
+        assert.fail()
+      } catch (error) {
+        assert.match(String(error), /Cannot find module/)
+      }
+    }
+  )
+
+  await t.test(
+    'should throw if passing a path to a directory',
+    async function () {
+      try {
+        await loadPlugin('./', {key: 'loadPlugin'})
+        assert.fail()
+      } catch (error) {
+        assert.match(String(error), /Directory import/)
+      }
+    }
+  )
+
+  await t.test('should support `key: false`', async function () {
+    const main = /** @type {object} */ (
+      await loadPlugin('./index.js', {key: false})
     )
-  }
 
-  const main = /** @type {object} */ (
-    await loadPlugin('./index.js', {key: false})
-  )
+    assert.deepEqual(Object.keys(main), ['loadPlugin', 'resolvePlugin'])
+  })
 
-  assert.deepEqual(
-    Object.keys(main),
-    ['loadPlugin', 'resolvePlugin'],
-    'should support `key: false`'
-  )
-
-  assert.equal(
-    typeof (await loadPlugin('micromark', {key: 'micromark'})),
-    'function',
-    'should look for `$root/node_modules/$name`'
-  )
-
-  assert.equal(
-    typeof (await loadPlugin('micromark/stream', {key: 'stream'})),
-    'function',
-    'should look for `$root/node_modules/$name$rest` where $rest is a path'
-  )
-
-  assert.equal(
-    await loadPlugin('alpha', {cwd: __dirname}),
-    'bravo',
-    'should look for `$cwd/node_modules/$name`'
-  )
-
-  assert.equal(
-    await loadPlugin('alpha/other.js', {cwd: __dirname}),
-    'other',
-    'should look for `$cwd/node_modules/$name$rest` where $rest is a path'
-  )
-
-  try {
-    await loadPlugin('alpha/other', {cwd: __dirname})
-    assert.fail()
-  } catch (error) {
-    assert.match(
-      String(error),
-      /Cannot find module/,
-      'throws for `$cwd/node_modules/$name$rest` where $rest is a path without extension'
+  await t.test('should look for `$root/node_modules/$name`', async function () {
+    assert.equal(
+      typeof (await loadPlugin('micromark', {key: 'micromark'})),
+      'function'
     )
-  }
+  })
 
-  assert.equal(
-    await loadPlugin('lint', {
-      prefix: 'remark',
-      cwd: [__dirname, process.cwd()]
-    }),
-    'echo',
-    'should support a list of `cwd`s (1)'
+  await t.test(
+    'should look for `$root/node_modules/$name$rest` where $rest is a path',
+    async function () {
+      assert.equal(
+        typeof (await loadPlugin('micromark/stream', {key: 'stream'})),
+        'function'
+      )
+    }
   )
 
-  assert.equal(
-    await loadPlugin('lint', {
-      prefix: 'remark',
-      cwd: [process.cwd(), __dirname]
-    }),
-    lint,
-    'should support a list of `cwd`s (2)'
+  await t.test('should look for `$cwd/node_modules/$name`', async function () {
+    assert.equal(await loadPlugin('alpha', {cwd: __dirname}), 'bravo')
+  })
+
+  await t.test(
+    'should look for `$cwd/node_modules/$name$rest` where $rest is a path',
+    async function () {
+      assert.equal(
+        await loadPlugin('alpha/other.js', {cwd: __dirname}),
+        'other'
+      )
+    }
   )
+
+  await t.test(
+    'should throw for `$cwd/node_modules/$name$rest` where $rest is a path without extension',
+    async function () {
+      try {
+        await loadPlugin('alpha/other', {cwd: __dirname})
+        assert.fail()
+      } catch (error) {
+        assert.match(String(error), /Cannot find module/)
+      }
+    }
+  )
+
+  await t.test('should support a list of `cwd`s (1)', async function () {
+    assert.equal(
+      await loadPlugin('lint', {
+        cwd: [__dirname, process.cwd()],
+        prefix: 'remark'
+      }),
+      'echo'
+    )
+  })
+
+  await t.test('should support a list of `cwd`s (2)', async function () {
+    assert.equal(
+      await loadPlugin('lint', {
+        cwd: [process.cwd(), __dirname],
+        prefix: 'remark'
+      }),
+      remarkLint
+    )
+  })
 
   // Global: `$modules/$plugin` is untestable
 
-  try {
-    await loadPlugin('does not exist', {global: true, prefix: 'this'})
-    assert.fail()
-  } catch (error) {
-    assert.match(
-      String(error),
-      /Cannot find package 'does not exist'/,
-      'throws if a path cannot be found'
-    )
-  }
+  await t.test('should throw if a path cannot be found', async function () {
+    try {
+      await loadPlugin('does not exist', {global: true, prefix: 'this'})
+      assert.fail()
+    } catch (error) {
+      assert.match(String(error), /Cannot find package 'does not exist'/)
+    }
+  })
 
-  try {
-    await loadPlugin('@foxtrot', {cwd: __dirname, prefix: 'foo'})
-    assert.fail()
-  } catch (error) {
-    assert.match(
-      String(error),
-      /Invalid module "@foxtrot" is not a valid package name/,
-      'throws for just a scope'
-    )
-  }
+  await t.test('should throw for just a scope', async function () {
+    try {
+      await loadPlugin('@foxtrot', {cwd: __dirname, prefix: 'foo'})
+      assert.fail()
+    } catch (error) {
+      assert.match(
+        String(error),
+        /Invalid module "@foxtrot" is not a valid package name/
+      )
+    }
+  })
 
-  try {
-    await loadPlugin('npm', {global: true})
-  } catch (error) {
-    assert.match(
-      String(error),
-      /The programmatic API was removed/,
-      'supports loading global packages (npm)'
-    )
-  }
+  await t.test(
+    'should support loading global packages (npm)',
+    async function () {
+      try {
+        await loadPlugin('npm', {global: true})
+      } catch (error) {
+        assert.match(String(error), /The programmatic API was removed/)
+      }
+    }
+  )
 })
 
-test('resolvePlugin(name[, options])', async () => {
-  assert.equal(
-    path.relative(__dirname, await resolvePlugin('alpha', {cwd: __dirname})),
-    path.join('node_modules', 'alpha', 'index.js'),
-    'should look for `$cwd/node_modules/$name`'
-  )
-
-  try {
-    await resolvePlugin('does not exist')
-    assert.fail()
-  } catch (error) {
-    assert.match(
-      String(error),
-      /Cannot find package/,
-      'throws for just a scope'
+test('resolvePlugin', async function (t) {
+  await t.test('should look for `$cwd/node_modules/$name`', async function () {
+    assert.equal(
+      path.relative(__dirname, await resolvePlugin('alpha', {cwd: __dirname})),
+      path.join('node_modules', 'alpha', 'index.js')
     )
-  }
+  })
+
+  await t.test('should throw for just a scope', async function () {
+    try {
+      await resolvePlugin('does not exist')
+      assert.fail()
+    } catch (error) {
+      assert.match(String(error), /Cannot find package/)
+    }
+  })
 })
