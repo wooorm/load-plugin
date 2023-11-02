@@ -1,7 +1,7 @@
-.DS_Store
+/coverage/
+/node_modules/
 *.d.ts
 *.log
-*.tgz
-coverage/
-/node_modules/
+*.map
+.DS_Store
 yarn.lock
