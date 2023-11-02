@@ -1,52 +1,52 @@
-on:
-  - pull_request
-  - push
 jobs:
   full:
     name: main
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: dcodeIO/setup-node-nvm@master
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: lts/hydrogen
+          node-version: node
       - run: npm install
       - run: npm test
-      - uses: codecov/codecov-action@v1
-  nvm:
-    name: '${{matrix.node}} on ${{matrix.os}} w/ nvm'
-    runs-on: ${{matrix.os}}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dcodeIO/setup-node-nvm@master
-        with:
-          node-version: ${{matrix.node}}
-      - run: npm install
-      - run: npm run test-coverage
-    strategy:
-      matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
-          - macos-latest
-        node:
-          - lts/hydrogen
+      - uses: codecov/codecov-action@v3
   no-nvm:
     name: '${{matrix.node}} on ${{matrix.os}} w/o nvm'
     runs-on: ${{matrix.os}}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{matrix.node}}
       - run: npm install
       - run: npm run test-coverage
     strategy:
       matrix:
+        node:
+          - lts/gallium
+          - node
         os:
           - ubuntu-latest
           - windows-latest
           - macos-latest
+  nvm:
+    name: '${{matrix.node}} on ${{matrix.os}} w/ nvm'
+    runs-on: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dcodeIO/setup-node-nvm@v5
+        with:
+          node-version: ${{matrix.node}}
+      - run: npm install
+      - run: npm run test-coverage
+    strategy:
+      matrix:
         node:
-          - lts/hydrogen
           - node
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+on:
+  - pull_request
+  - push
