@@ -1,13 +1,9 @@
 import assert from 'node:assert/strict'
-import {fileURLToPath} from 'node:url'
-import path from 'node:path'
 import process from 'node:process'
 import test from 'node:test'
 // Get the real one, not the fake one from our `test/node_modules/`.
 import remarkLint from '../node_modules/remark-lint/index.js'
 import {loadPlugin, resolvePlugin} from '../index.js'
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 test('core', async function (t) {
   await t.test('should expose the public api', async function () {
@@ -33,7 +29,7 @@ test('loadPlugin', async function (t) {
     'should look for `$cwd/node_modules/$prefix-$name`',
     async function () {
       assert.equal(
-        await loadPlugin('delta', {cwd: __dirname, prefix: 'charlie'}),
+        await loadPlugin('delta', {from: import.meta.url, prefix: 'charlie'}),
         'echo'
       )
     }
@@ -44,7 +40,7 @@ test('loadPlugin', async function (t) {
     async function () {
       assert.equal(
         await loadPlugin('delta/another.js', {
-          cwd: __dirname,
+          from: import.meta.url,
           prefix: 'charlie'
         }),
         'another'
@@ -57,7 +53,7 @@ test('loadPlugin', async function (t) {
     async function () {
       assert.equal(
         await loadPlugin('delta/another.js', {
-          cwd: __dirname,
+          from: import.meta.url,
           prefix: 'charlie'
         }),
         'another'
@@ -69,7 +65,10 @@ test('loadPlugin', async function (t) {
     'should look for `$cwd/node_modules/$scope/$prefix-$name` if a scope is given',
     async function () {
       assert.equal(
-        await loadPlugin('@foxtrot/hotel', {cwd: __dirname, prefix: 'golf'}),
+        await loadPlugin('@foxtrot/hotel', {
+          from: import.meta.url,
+          prefix: 'golf'
+        }),
         'india'
       )
     }
@@ -80,7 +79,7 @@ test('loadPlugin', async function (t) {
     async function () {
       assert.equal(
         await loadPlugin('@foxtrot/hotel/other.js', {
-          cwd: __dirname,
+          from: import.meta.url,
           prefix: 'golf'
         }),
         'other'
@@ -129,7 +128,7 @@ test('loadPlugin', async function (t) {
     async function () {
       assert.equal(
         await loadPlugin('@foxtrot/golf-hotel', {
-          cwd: __dirname,
+          from: import.meta.url,
           prefix: 'golf'
         }),
         'india'
@@ -200,14 +199,14 @@ test('loadPlugin', async function (t) {
   )
 
   await t.test('should look for `$cwd/node_modules/$name`', async function () {
-    assert.equal(await loadPlugin('alpha', {cwd: __dirname}), 'bravo')
+    assert.equal(await loadPlugin('alpha', {from: import.meta.url}), 'bravo')
   })
 
   await t.test(
     'should look for `$cwd/node_modules/$name$rest` where $rest is a path',
     async function () {
       assert.equal(
-        await loadPlugin('alpha/other.js', {cwd: __dirname}),
+        await loadPlugin('alpha/other.js', {from: import.meta.url}),
         'other'
       )
     }
@@ -217,7 +216,7 @@ test('loadPlugin', async function (t) {
     'should throw for `$cwd/node_modules/$name$rest` where $rest is a path without extension',
     async function () {
       try {
-        await loadPlugin('alpha/other', {cwd: __dirname})
+        await loadPlugin('alpha/other', {from: import.meta.url})
         assert.fail()
       } catch (error) {
         assert.match(String(error), /Cannot find module/)
@@ -228,7 +227,7 @@ test('loadPlugin', async function (t) {
   await t.test('should support a list of `cwd`s (1)', async function () {
     assert.equal(
       await loadPlugin('lint', {
-        cwd: [__dirname, process.cwd()],
+        from: [import.meta.url, new URL('../', import.meta.url)],
         prefix: 'remark'
       }),
       'echo'
@@ -238,7 +237,7 @@ test('loadPlugin', async function (t) {
   await t.test('should support a list of `cwd`s (2)', async function () {
     assert.equal(
       await loadPlugin('lint', {
-        cwd: [process.cwd(), __dirname],
+        from: [process.cwd(), new URL('../', import.meta.url)],
         prefix: 'remark'
       }),
       remarkLint
@@ -258,7 +257,7 @@ test('loadPlugin', async function (t) {
 
   await t.test('should throw for just a scope', async function () {
     try {
-      await loadPlugin('@foxtrot', {cwd: __dirname, prefix: 'foo'})
+      await loadPlugin('@foxtrot', {from: import.meta.url, prefix: 'foo'})
       assert.fail()
     } catch (error) {
       assert.match(
@@ -283,8 +282,8 @@ test('loadPlugin', async function (t) {
 test('resolvePlugin', async function (t) {
   await t.test('should look for `$cwd/node_modules/$name`', async function () {
     assert.equal(
-      path.relative(__dirname, await resolvePlugin('alpha', {cwd: __dirname})),
-      path.join('node_modules', 'alpha', 'index.js')
+      await resolvePlugin('alpha', {from: import.meta.url}),
+      new URL('node_modules/alpha/index.js', import.meta.url).href
     )
   })
 
