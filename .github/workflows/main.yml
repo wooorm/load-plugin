@@ -28,7 +28,6 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
-          - macos-latest
   nvm:
     name: '${{matrix.node}} on ${{matrix.os}} w/ nvm'
     runs-on: ${{matrix.os}}
@@ -46,7 +45,6 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
-          - macos-latest
 on:
   - pull_request
   - push
