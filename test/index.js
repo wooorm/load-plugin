@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict'
 import process from 'node:process'
 import test from 'node:test'
+import {loadPlugin, resolvePlugin} from 'load-plugin'
 // Get the real one, not the fake one from our `test/node_modules/`.
 import remarkLint from '../node_modules/remark-lint/index.js'
-import {loadPlugin, resolvePlugin} from '../index.js'
 
 test('core', async function (t) {
   await t.test('should expose the public api', async function () {
-    assert.deepEqual(Object.keys(await import('../index.js')).sort(), [
+    assert.deepEqual(Object.keys(await import('load-plugin')).sort(), [
       'loadPlugin',
       'resolvePlugin'
     ])
