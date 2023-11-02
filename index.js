@@ -24,7 +24,10 @@ const nvm = process.env.NVM_BIN
 /* c8 ignore next */
 const globalsLibrary = windows ? '' : 'lib'
 
-const config = new NpmConfig({definitions: {}})
+const config = new NpmConfig({
+  npmPath: fileURLToPath(new URL('.', import.meta.url)),
+  definitions: {}
+})
 
 config.loadGlobalPrefix()
 
@@ -163,9 +166,7 @@ export async function resolvePlugin(name, options = {}) {
     try {
       // `import-meta-resolve` resolves from files, whereas `load-plugin` works
       // on folders, which is why we add a `/` at the end.
-      return fileURLToPath(
-        await esmResolve(name, pathToFileURL(base).href + '/')
-      )
+      return fileURLToPath(esmResolve(name, pathToFileURL(base).href + '/'))
       // Bug with coverage on Node@12.
       /* c8 ignore next 1 */
     } catch (error) {
