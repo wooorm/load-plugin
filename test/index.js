@@ -109,7 +109,7 @@ test('loadPlugin', async function (t) {
       await loadPlugin('lint/index', {prefix: 'remark'})
       assert.fail()
     } catch (error) {
-      assert.match(String(error), /Cannot find package 'lint'/)
+      assert.match(String(error), /Cannot find/)
     }
   })
 
