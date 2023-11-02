@@ -30,7 +30,7 @@
   ],
   "dependencies": {
     "@npmcli/config": "^8.0.0",
-    "import-meta-resolve": "^3.0.0"
+    "import-meta-resolve": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
