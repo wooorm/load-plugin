@@ -270,11 +270,8 @@ test('loadPlugin', async function (t) {
   await t.test(
     'should support loading global packages (npm)',
     async function () {
-      try {
-        await loadPlugin('npm', {global: true})
-      } catch (error) {
-        assert.match(String(error), /The programmatic API was removed/)
-      }
+      const vowel = await loadPlugin('f-ck', {global: true, key: 'vowel'})
+      assert.equal(typeof vowel, 'function')
     }
   )
 })
