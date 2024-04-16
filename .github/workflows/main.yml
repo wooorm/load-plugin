@@ -8,6 +8,7 @@ jobs:
         with:
           node-version: node
       - run: npm install
+      - run: npm install --global f-ck@2
       - run: npm test
       - uses: codecov/codecov-action@v3
   no-nvm:
@@ -19,6 +20,7 @@ jobs:
         with:
           node-version: ${{matrix.node}}
       - run: npm install
+      - run: npm install --global f-ck@2
       - run: npm run test-coverage
     strategy:
       matrix:
@@ -37,6 +39,7 @@ jobs:
         with:
           node-version: ${{matrix.node}}
       - run: npm install
+      - run: npm install --global f-ck@2
       - run: npm run test-coverage
     strategy:
       matrix:
