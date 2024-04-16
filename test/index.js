@@ -270,11 +270,10 @@ test('loadPlugin', async function (t) {
   await t.test(
     'should support loading global packages (npm)',
     async function () {
-      try {
-        await loadPlugin('npm', {global: true})
-      } catch (error) {
-        assert.match(String(error), /The programmatic API was removed/)
-      }
+      // If this fails, you need to make sure to install `f-ck` globally.
+      // That’s done by CI; but when running tests locally needs to be done manually.
+      const vowel = await loadPlugin('f-ck', {global: true, key: 'vowel'})
+      assert.equal(typeof vowel, 'function')
     }
   )
 })
