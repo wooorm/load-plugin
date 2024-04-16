@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import process from 'node:process'
 import test from 'node:test'
 import {loadPlugin, resolvePlugin} from 'load-plugin'
+import {regex} from 'github-slugger/regex.js'
 // Get the real one, not the fake one from our `test/node_modules/`.
 import remarkLint from '../node_modules/remark-lint/index.js'
 
@@ -98,8 +99,11 @@ test('loadPlugin', async function (t) {
     'should look for `$root/node_modules/$prefix-$name$rest` where $rest is a path',
     async function () {
       assert.deepEqual(
-        await loadPlugin('lint/index.js', {prefix: 'remark'}),
-        remarkLint
+        await loadPlugin('slugger/regex.js', {
+          key: 'regex',
+          prefix: 'github'
+        }),
+        regex
       )
     }
   )
