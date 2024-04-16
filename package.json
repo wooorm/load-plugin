@@ -24,9 +24,9 @@
   "exports": "./index.js",
   "files": [
     "lib/",
+    "index.d.ts.map",
     "index.d.ts",
-    "index.js",
-    "index.map"
+    "index.js"
   ],
   "dependencies": {
     "@npmcli/config": "^8.0.0",
