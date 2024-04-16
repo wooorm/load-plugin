@@ -8,19 +8,19 @@ Load a submodule, plugin, or file.
 
 ## Contents
 
-*   [What is this?](#what-is-this)
-*   [When to use this?](#when-to-use-this)
-*   [Install](#install)
-*   [Use](#use)
-*   [API](#api)
-    *   [`loadPlugin(name[, options])`](#loadpluginname-options)
-    *   [`resolvePlugin(name[, options])`](#resolvepluginname-options)
-    *   [`LoadOptions`](#loadoptions)
-    *   [`ResolveOptions`](#resolveoptions)
-*   [Compatibility](#compatibility)
-*   [Security](#security)
-*   [Contribute](#contribute)
-*   [License](#license)
+* [What is this?](#what-is-this)
+* [When to use this?](#when-to-use-this)
+* [Install](#install)
+* [Use](#use)
+* [API](#api)
+  * [`loadPlugin(name[, options])`](#loadpluginname-options)
+  * [`resolvePlugin(name[, options])`](#resolvepluginname-options)
+  * [`LoadOptions`](#loadoptions)
+  * [`ResolveOptions`](#resolveoptions)
+* [Compatibility](#compatibility)
+* [Security](#security)
+* [Contribute](#contribute)
+* [License](#license)
 
 ## What is this?
 
@@ -95,10 +95,10 @@ the prefix is applied after it: `@scope/$prefix-name`.
 
 ###### Parameters
 
-*   `name` (`string`)
-    — specifier
-*   `options` ([`LoadOptions`][api-load-options], optional)
-    — configuration
+* `name` (`string`)
+  — specifier
+* `options` ([`LoadOptions`][api-load-options], optional)
+  — configuration
 
 ###### Returns
 
@@ -110,10 +110,10 @@ Resolve `name` from `from`.
 
 ###### Parameters
 
-*   `name` (`string`)
-    — specifier
-*   `options` ([`ResolveOptions`][api-resolve-options], optional)
-    — configuration
+* `name` (`string`)
+  — specifier
+* `options` ([`ResolveOptions`][api-resolve-options], optional)
+  — configuration
 
 ###### Returns
 
@@ -127,13 +127,13 @@ This type extends `ResolveOptions` and adds:
 
 ###### Fields
 
-*   `key` (`boolean` or `string`, default: `'default'`)
-    — identifier to take from the exports;
-    for example when given `'x'`,
-    the value of `export const x = 1` will be returned;
-    when given `'default'`,
-    the value of `export default …` is used,
-    and when `false` the whole module object is returned
+* `key` (`boolean` or `string`, default: `'default'`)
+  — identifier to take from the exports;
+  for example when given `'x'`,
+  the value of `export const x = 1` will be returned;
+  when given `'default'`,
+  the value of `export default …` is used,
+  and when `false` the whole module object is returned
 
 ### `ResolveOptions`
 
@@ -141,21 +141,21 @@ Configuration for `resolvePlugin` (TypeScript type).
 
 ###### Fields
 
-*   `from` (`Array<URL | string> | URL | string`, optional)
-    — place or places to search from;
-    defaults to the current working directory
-*   `global` (`boolean`, default: whether global is detected)
-    — whether to look for `name` in [global places][npm-node-modules];
-    if this is nullish,
-    `load-plugin` will detect if it’s currently running in global mode: either
-    because it’s in Electron or because a globally installed package is running
-    it;
-    note that Electron runs its own version of Node instead of your system Node,
-    meaning global packages cannot be found,
-    unless you’ve set-up a [`prefix`][npm-prefix] in your `.npmrc` or are using
-    [nvm][github-nvm] to manage your system node
-*   `prefix` (`string`, optional)
-    — prefix to search for
+* `from` (`Array<URL | string> | URL | string`, optional)
+  — place or places to search from;
+  defaults to the current working directory
+* `global` (`boolean`, default: whether global is detected)
+  — whether to look for `name` in [global places][npm-node-modules];
+  if this is nullish,
+  `load-plugin` will detect if it’s currently running in global mode: either
+  because it’s in Electron or because a globally installed package is running
+  it;
+  note that Electron runs its own version of Node instead of your system Node,
+  meaning global packages cannot be found,
+  unless you’ve set-up a [`prefix`][npm-prefix] in your `.npmrc` or are using
+  [nvm][github-nvm] to manage your system node
+* `prefix` (`string`, optional)
+  — prefix to search for
 
 ## Compatibility
 
