@@ -13,6 +13,13 @@ test('core', async function (t) {
       'resolvePlugin'
     ])
   })
+
+  // The npm prefix is inferred once, on the first call, so this runs first.
+  await t.test('should not change `process.env`', async function () {
+    const before = {...process.env}
+    await resolvePlugin('alpha', {from: import.meta.url})
+    assert.deepEqual({...process.env}, before)
+  })
 })
 
 test('loadPlugin', async function (t) {
