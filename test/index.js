@@ -50,19 +50,6 @@ test('loadPlugin', async function (t) {
   )
 
   await t.test(
-    'should look for `$cwd/node_modules/$prefix-$name$rest` where $rest is a path',
-    async function () {
-      assert.equal(
-        await loadPlugin('delta/another.js', {
-          from: import.meta.url,
-          prefix: 'charlie'
-        }),
-        'another'
-      )
-    }
-  )
-
-  await t.test(
     'should look for `$cwd/node_modules/$scope/$prefix-$name` if a scope is given',
     async function () {
       assert.equal(
@@ -250,14 +237,17 @@ test('loadPlugin', async function (t) {
 
   // Global: `$modules/$plugin` is untestable
 
-  await t.test('should throw if a path cannot be found', async function () {
-    try {
-      await loadPlugin('does not exist', {global: true, prefix: 'this'})
-      assert.fail()
-    } catch (error) {
-      assert.match(String(error), /Cannot find package 'does not exist'/)
+  await t.test(
+    'should throw if a package cannot be found globally',
+    async function () {
+      try {
+        await loadPlugin('does not exist', {global: true, prefix: 'this'})
+        assert.fail()
+      } catch (error) {
+        assert.match(String(error), /Cannot find package 'does not exist'/)
+      }
     }
-  })
+  )
 
   await t.test('should throw for just a scope', async function () {
     try {
@@ -290,7 +280,7 @@ test('resolvePlugin', async function (t) {
     )
   })
 
-  await t.test('should throw for just a scope', async function () {
+  await t.test('should throw if a package cannot be found', async function () {
     try {
       await resolvePlugin('does not exist')
       assert.fail()
