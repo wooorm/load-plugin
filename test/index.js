@@ -100,7 +100,7 @@ test('loadPlugin', async function (t) {
   await t.test('should throw if a path cannot be found', async function () {
     await assert.rejects(
       loadPlugin('lint/index', {prefix: 'remark'}),
-      /Cannot find/
+      /Package subpath '.\/index' is not defined by "exports"/
     )
   })
 
@@ -231,7 +231,7 @@ test('loadPlugin', async function (t) {
   await t.test('should throw for a missing global package', async function () {
     await assert.rejects(
       loadPlugin('does not exist', {global: true, prefix: 'this'}),
-      /Cannot find package 'does not exist'/
+      {message: 'Cannot find `does not exist`'}
     )
   })
 
@@ -262,6 +262,31 @@ test('resolvePlugin', async function (t) {
   })
 
   await t.test('should throw for a missing package', async function () {
-    await assert.rejects(resolvePlugin('does not exist'), /Cannot find package/)
+    await assert.rejects(resolvePlugin('x'), {message: 'Cannot find `x`'})
+  })
+
+  await t.test('should keep each error', async function () {
+    await assert.rejects(
+      resolvePlugin('x', {from: ['file:///a/', 'file:///b/']}),
+      /**
+       * Check errors.
+       *
+       * @param {unknown} error
+       *   Thrown value.
+       * @returns {boolean}
+       *   Whether there is an error for each place.
+       */
+      function (error) {
+        return (
+          typeof error === 'object' &&
+          error !== null &&
+          'errors' in error &&
+          typeof error.errors === 'object' &&
+          error.errors !== null &&
+          'length' in error.errors &&
+          error.errors.length === 2
+        )
+      }
+    )
   })
 })
