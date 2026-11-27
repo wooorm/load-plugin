@@ -1,37 +1,14 @@
 {
-  "name": "load-plugin",
-  "version": "6.0.3",
-  "description": "Load a submodule, plugin, or file",
-  "license": "MIT",
-  "keywords": [
-    "load",
-    "package",
-    "plugin",
-    "submodule"
-  ],
-  "repository": "wooorm/load-plugin",
-  "bugs": "https://github.com/wooorm/load-plugin/issues",
-  "funding": {
-    "type": "github",
-    "url": "https://github.com/sponsors/wooorm"
-  },
   "author": "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)",
+  "bugs": "https://github.com/wooorm/load-plugin/issues",
   "contributors": [
     "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)"
-  ],
-  "sideEffects": false,
-  "type": "module",
-  "exports": "./index.js",
-  "files": [
-    "lib/",
-    "index.d.ts.map",
-    "index.d.ts",
-    "index.js"
   ],
   "dependencies": {
     "@npmcli/config": "^8.0.0",
     "import-meta-resolve": "^4.0.0"
   },
+  "description": "Load a submodule, plugin, or file",
   "devDependencies": {
     "@types/node": "^26.0.0",
     "c8": "^12.0.0",
@@ -44,18 +21,29 @@
     "typescript": "^6.0.0",
     "xo": "^5.0.0"
   },
-  "scripts": {
-    "build": "tsc --build --clean && tsc --build && type-coverage",
-    "format": "remark . --frail --output --quiet && prettier . --log-level warn --write && xo --fix",
-    "prepack": "npm run build && npm run format",
-    "test": "npm run build && npm run format && npm run test-coverage",
-    "test-api": "node --conditions development test/index.js",
-    "test-coverage": "c8 --100 --reporter lcov npm run test-api"
+  "exports": "./index.js",
+  "files": [
+    "lib/",
+    "index.d.ts.map",
+    "index.d.ts",
+    "index.js"
+  ],
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/wooorm"
   },
+  "keywords": [
+    "load",
+    "package",
+    "plugin",
+    "submodule"
+  ],
+  "license": "MIT",
+  "name": "load-plugin",
   "prettier": {
     "bracketSpacing": false,
-    "singleQuote": true,
     "semi": false,
+    "singleQuote": true,
     "tabWidth": 2,
     "trailingComma": "none",
     "useTabs": false
@@ -65,10 +53,20 @@
       "remark-preset-wooorm"
     ]
   },
+  "repository": "wooorm/load-plugin",
+  "scripts": {
+    "build": "tsc --build --clean && tsc --build && type-coverage",
+    "format": "remark --frail --output --quiet -- . && prettier --log-level warn --write -- . && xo --fix",
+    "prepack": "npm run build && npm run format",
+    "test-api": "node --conditions development test/index.js",
+    "test-coverage": "c8 --100 --reporter lcov -- npm run test-api",
+    "test": "npm run build && npm run format && npm run test-coverage"
+  },
+  "sideEffects": false,
   "typeCoverage": {
     "atLeast": 100,
-    "detail": true,
-    "ignoreCatch": true,
     "strict": true
-  }
+  },
+  "type": "module",
+  "version": "6.0.3"
 }
