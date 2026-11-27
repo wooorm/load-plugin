@@ -44,7 +44,7 @@ For example,
 ## Install
 
 This package is [ESM only][github-gist-esm].
-In Node.js (version 16+),
+In Node.js (version 22+),
 install with [npm][npmjs-install]:
 
 ```sh
@@ -181,8 +181,8 @@ This package is compatible with maintained versions of Node.js.
 When we cut a new major release,
 we drop support for unmaintained versions of Node.
 This means we try to keep the current release line,
-`load-plugin@6`,
-compatible with Node.js 16.
+`load-plugin@7`,
+compatible with Node.js 22.
 
 ## Security
 
