@@ -9,34 +9,37 @@ Load a submodule, plugin, or file.
 ## Contents
 
 * [What is this?](#what-is-this)
-* [When to use this?](#when-to-use-this)
+* [When should I use this?](#when-should-i-use-this)
 * [Install](#install)
 * [Use](#use)
 * [API](#api)
-  * [`loadPlugin(name[, options])`](#loadpluginname-options)
-  * [`resolvePlugin(name[, options])`](#resolvepluginname-options)
   * [`LoadOptions`](#loadoptions)
   * [`ResolveOptions`](#resolveoptions)
+  * [`loadPlugin(name[, options])`](#loadpluginname-options)
+  * [`resolvePlugin(name[, options])`](#resolvepluginname-options)
+* [Algorithm](#algorithm)
 * [Compatibility](#compatibility)
 * [Security](#security)
+* [Related](#related)
 * [Contribute](#contribute)
 * [License](#license)
 
 ## What is this?
 
 This package is useful when you want to load plugins.
-It resolves things like Node.js does,
-but supports a prefix (when given a prefix `remark` and the user provided value
-`gfm` it can find `remark-gfm`),
-can load from several places,
-and optionally global too.
+It resolves and imports modules like Node.js does with some extras.
+For example,
+it can add a prefix to names
+(when given a prefix `remark` and the user-provided value `gfm`,
+it finds `remark-gfm`),
+search from several places,
+and search global `node_modules` folders.
 
-## When to use this?
+## When should I use this?
 
-This package is particularly useful when you want users to configure something
-with plugins.
-One example is `remark-cli` which can load remark plugins from configuration
-files.
+You can use this when users configure your tool with plugins.
+For example,
+`remark-cli` uses it to load remark plugins named in configuration files.
 
 ## Install
 
@@ -73,29 +76,61 @@ console.log(await loadPlugin('lint', {prefix: 'remark'}))
 ## API
 
 This package exports the identifiers
-[`loadPlugin`][api-load-plugin] and [`resolvePlugin`][api-resolve-plugin].
+[`loadPlugin`][api-load-plugin] and
+[`resolvePlugin`][api-resolve-plugin].
 There is no default export.
+It exports the additional [TypeScript][] types
+[`LoadOptions`][api-load-options] and
+[`ResolveOptions`][api-resolve-options].
 
-It exports the [TypeScript][] types
-[`LoadOptions`][api-load-options] and [`ResolveOptions`][api-resolve-options].
+### `LoadOptions`
+
+Configuration for [`loadPlugin`][api-load-plugin] (TypeScript type).
+
+Includes the fields of [`ResolveOptions`][api-resolve-options].
+
+###### Fields
+
+* `key` (`boolean` or `string`, default: `'default'`)
+  — identifier to take from the exports;
+  for example when given `'x'`,
+  the value of `export const x = 1` is returned;
+  when given `'default'`,
+  the value of `export default …` is returned;
+  when `false`,
+  the whole module object is returned
+
+### `ResolveOptions`
+
+Configuration for [`resolvePlugin`][api-resolve-plugin] (TypeScript type).
+
+###### Fields
+
+* `from` (`Array<URL | string> | URL | string`, optional)
+  — place or places to search from;
+  defaults to the current working directory
+* `global` (`boolean`, default: whether global is detected)
+  — whether to also search [global `node_modules`][npmjs-node-modules];
+  when nullish,
+  global mode is detected:
+  it is on when running in Electron or from a globally installed package;
+  note that Electron runs its own Node instead of your system Node,
+  so global packages cannot be found,
+  unless you set a [`prefix`][npmjs-prefix] in your `.npmrc` or use
+  [nvm][github-nvm] to manage your system Node
+* `prefix` (`string`, optional)
+  — prefix to search for
 
 ### `loadPlugin(name[, options])`
 
-Import `name` from `from` (and optionally the global `node_modules` directory).
+Import `name` from `from` (and optionally the global `node_modules`
+folder).
 
-Uses the Node.js [resolution algorithm][nodejs-esm-resolution] (through
-[`import-meta-resolve`][github-import-meta-resolve]) to resolve CJS and ESM
-packages and files.
-
-If a `prefix` is given and `name` is not a path,
-`$prefix-$name` is also searched (preferring these over non-prefixed
-modules).
-If `name` starts with a scope (`@scope/name`),
-the prefix is applied after it: `@scope/$prefix-name`.
+See [Algorithm][] for how `name` is resolved.
 
 ###### Parameters
 
-* `name` (`string`)
+* `name` (`string`, required)
   — specifier
 * `options` ([`LoadOptions`][api-load-options], optional)
   — configuration
@@ -106,11 +141,14 @@ Promise to a whole module or specific export (`Promise<unknown>`).
 
 ### `resolvePlugin(name[, options])`
 
-Resolve `name` from `from`.
+Resolve `name` from `from` (and optionally the global `node_modules`
+folder).
+
+See [Algorithm][] for how `name` is resolved.
 
 ###### Parameters
 
-* `name` (`string`)
+* `name` (`string`, required)
   — specifier
 * `options` ([`ResolveOptions`][api-resolve-options], optional)
   — configuration
@@ -119,47 +157,26 @@ Resolve `name` from `from`.
 
 Promise to a file URL (`Promise<string>`).
 
-### `LoadOptions`
+## Algorithm
 
-Configuration for `loadPlugin` (TypeScript type).
+Names are resolved with the Node.js
+[resolution algorithm][nodejs-esm-resolution]
+(through [`import-meta-resolve`][github-import-meta-resolve])
+to CJS and ESM packages and files.
+Each place in `from` is tried in order.
+When `global` is on and `name` is not a path,
+the global `node_modules` folder is tried last.
 
-This type extends `ResolveOptions` and adds:
-
-###### Fields
-
-* `key` (`boolean` or `string`, default: `'default'`)
-  — identifier to take from the exports;
-  for example when given `'x'`,
-  the value of `export const x = 1` will be returned;
-  when given `'default'`,
-  the value of `export default …` is used,
-  and when `false` the whole module object is returned
-
-### `ResolveOptions`
-
-Configuration for `resolvePlugin` (TypeScript type).
-
-###### Fields
-
-* `from` (`Array<URL | string> | URL | string`, optional)
-  — place or places to search from;
-  defaults to the current working directory
-* `global` (`boolean`, default: whether global is detected)
-  — whether to look for `name` in [global places][npmjs-node-modules];
-  if this is nullish,
-  `load-plugin` will detect if it’s currently running in global mode: either
-  because it’s in Electron or because a globally installed package is running
-  it;
-  note that Electron runs its own version of Node instead of your system Node,
-  meaning global packages cannot be found,
-  unless you’ve set-up a [`prefix`][npmjs-prefix] in your `.npmrc` or are using
-  [nvm][github-nvm] to manage your system node
-* `prefix` (`string`, optional)
-  — prefix to search for
+When a `prefix` is given and `name` is not a path,
+`$prefix-$name` is also searched,
+and preferred over `name` in each place.
+When `name` starts with a scope (`@scope/name`),
+the prefix is added after it: `@scope/$prefix-name`.
+A `name` that already starts with the prefix is not prefixed again.
 
 ## Compatibility
 
-This projects is compatible with maintained versions of Node.js.
+This package is compatible with maintained versions of Node.js.
 
 When we cut a new major release,
 we drop support for unmaintained versions of Node.
@@ -169,7 +186,13 @@ compatible with Node.js 16.
 
 ## Security
 
-This package reads the file system and imports things into Node.js.
+This package reads the file system and imports modules,
+which runs that code.
+
+## Related
+
+* [`wooorm/import-meta-resolve`][github-import-meta-resolve]
+  — resolve things like Node.js does
 
 ## Contribute
 
@@ -181,6 +204,8 @@ See [How to Contribute to Open Source][opensource-guide-contribute].
 [MIT][file-license] © [Titus Wormer][wooorm]
 
 <!-- Definitions -->
+
+[algorithm]: #algorithm
 
 [api-load-options]: #loadoptions
 

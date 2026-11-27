@@ -156,15 +156,12 @@ test('loadPlugin', async function (t) {
     }
   )
 
-  await t.test(
-    'should throw if passing a path to a directory',
-    async function () {
-      await assert.rejects(
-        loadPlugin('./', {key: 'loadPlugin'}),
-        /Directory import/
-      )
-    }
-  )
+  await t.test('should throw if passing a path to a folder', async function () {
+    await assert.rejects(
+      loadPlugin('./', {key: 'loadPlugin'}),
+      /Directory import/
+    )
+  })
 
   await t.test('should support `key: false`', async function () {
     const main = /** @type {object} */ (
