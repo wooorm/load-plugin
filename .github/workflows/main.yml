@@ -48,6 +48,7 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
+name: main
 on:
   - pull_request
   - push

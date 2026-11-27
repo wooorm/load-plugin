@@ -239,9 +239,9 @@ See [How to Contribute to Open Source][opensource-guide-contribute].
 
 [npmjs-install]: https://docs.npmjs.com/cli/install
 
-[npmjs-node-modules]: https://docs.npmjs.com/cli/v10/configuring-npm/folders#node-modules
+[npmjs-node-modules]: https://docs.npmjs.com/cli/configuring-npm/folders#node-modules
 
-[npmjs-prefix]: https://docs.npmjs.com/cli/v10/using-npm/config
+[npmjs-prefix]: https://docs.npmjs.com/cli/using-npm/config
 
 [opensource-guide-contribute]: https://opensource.guide/how-to-contribute/
 
