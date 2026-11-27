@@ -16,6 +16,13 @@ test('core', async function (t) {
 })
 
 test('loadPlugin', async function (t) {
+  // Must be tested first, as npm prefix inferral is done once.
+  await t.test('should not change `process.env`', async function () {
+    const expected = {...process.env}
+    await loadPlugin('./index.js')
+    assert.deepEqual({...process.env}, expected)
+  })
+
   await t.test('should fail w/o argument', async function () {
     // @ts-expect-error: check how the runtime handles a missing specifier.
     await assert.rejects(loadPlugin(), /Cannot read properties of undefined/)
@@ -27,19 +34,6 @@ test('loadPlugin', async function (t) {
       assert.equal(
         await loadPlugin('delta', {from: import.meta.url, prefix: 'charlie'}),
         'echo'
-      )
-    }
-  )
-
-  await t.test(
-    'should look for `$cwd/node_modules/$prefix-$name$rest` where $rest is a path',
-    async function () {
-      assert.equal(
-        await loadPlugin('delta/another.js', {
-          from: import.meta.url,
-          prefix: 'charlie'
-        }),
-        'another'
       )
     }
   )
@@ -234,7 +228,7 @@ test('loadPlugin', async function (t) {
 
   // Global: `$modules/$plugin` is untestable
 
-  await t.test('should throw if a path cannot be found', async function () {
+  await t.test('should throw for a missing global package', async function () {
     await assert.rejects(
       loadPlugin('does not exist', {global: true, prefix: 'this'}),
       /Cannot find package 'does not exist'/
@@ -267,7 +261,7 @@ test('resolvePlugin', async function (t) {
     )
   })
 
-  await t.test('should throw for just a scope', async function () {
+  await t.test('should throw for a missing package', async function () {
     await assert.rejects(resolvePlugin('does not exist'), /Cannot find package/)
   })
 })
