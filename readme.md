@@ -42,7 +42,7 @@ files.
 
 This package is [ESM only][github-gist-esm].
 In Node.js (version 16+),
-install with [npm][npm-install]:
+install with [npm][npmjs-install]:
 
 ```sh
 npm install load-plugin
@@ -83,7 +83,7 @@ It exports the [TypeScript][] types
 
 Import `name` from `from` (and optionally the global `node_modules` directory).
 
-Uses the Node.js [resolution algorithm][nodejs-resolution-algo] (through
+Uses the Node.js [resolution algorithm][nodejs-esm-resolution] (through
 [`import-meta-resolve`][github-import-meta-resolve]) to resolve CJS and ESM
 packages and files.
 
@@ -145,14 +145,14 @@ Configuration for `resolvePlugin` (TypeScript type).
   — place or places to search from;
   defaults to the current working directory
 * `global` (`boolean`, default: whether global is detected)
-  — whether to look for `name` in [global places][npm-node-modules];
+  — whether to look for `name` in [global places][npmjs-node-modules];
   if this is nullish,
   `load-plugin` will detect if it’s currently running in global mode: either
   because it’s in Electron or because a globally installed package is running
   it;
   note that Electron runs its own version of Node instead of your system Node,
   meaning global packages cannot be found,
-  unless you’ve set-up a [`prefix`][npm-prefix] in your `.npmrc` or are using
+  unless you’ve set-up a [`prefix`][npmjs-prefix] in your `.npmrc` or are using
   [nvm][github-nvm] to manage your system node
 * `prefix` (`string`, optional)
   — prefix to search for
@@ -174,7 +174,7 @@ This package reads the file system and imports things into Node.js.
 ## Contribute
 
 Yes please!
-See [How to Contribute to Open Source][open-source-guide-contribute].
+See [How to Contribute to Open Source][opensource-guide-contribute].
 
 ## License
 
@@ -210,15 +210,15 @@ See [How to Contribute to Open Source][open-source-guide-contribute].
 
 [github-nvm]: https://github.com/nvm-sh/nvm
 
-[nodejs-resolution-algo]: https://nodejs.org/api/esm.html#esm_resolution_algorithm
+[nodejs-esm-resolution]: https://nodejs.org/api/esm.html#esm_resolution_algorithm
 
-[npm-install]: https://docs.npmjs.com/cli/install
+[npmjs-install]: https://docs.npmjs.com/cli/install
 
-[npm-node-modules]: https://docs.npmjs.com/cli/v10/configuring-npm/folders#node-modules
+[npmjs-node-modules]: https://docs.npmjs.com/cli/v10/configuring-npm/folders#node-modules
 
-[npm-prefix]: https://docs.npmjs.com/cli/v10/using-npm/config
+[npmjs-prefix]: https://docs.npmjs.com/cli/v10/using-npm/config
 
-[open-source-guide-contribute]: https://opensource.guide/how-to-contribute/
+[opensource-guide-contribute]: https://opensource.guide/how-to-contribute/
 
 [typescript]: https://www.typescriptlang.org
 
