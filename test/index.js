@@ -17,13 +17,8 @@ test('core', async function (t) {
 
 test('loadPlugin', async function (t) {
   await t.test('should fail w/o argument', async function () {
-    try {
-      // @ts-expect-error: check how the runtime handles a missing specifier.
-      await loadPlugin()
-      assert.fail()
-    } catch (error) {
-      assert.match(String(error), /Cannot read properties of undefined/)
-    }
+    // @ts-expect-error: check how the runtime handles a missing specifier.
+    await assert.rejects(loadPlugin(), /Cannot read properties of undefined/)
   })
 
   await t.test(
@@ -109,12 +104,10 @@ test('loadPlugin', async function (t) {
   )
 
   await t.test('should throw if a path cannot be found', async function () {
-    try {
-      await loadPlugin('lint/index', {prefix: 'remark'})
-      assert.fail()
-    } catch (error) {
-      assert.match(String(error), /Cannot find/)
-    }
+    await assert.rejects(
+      loadPlugin('lint/index', {prefix: 'remark'}),
+      /Cannot find/
+    )
   })
 
   await t.test(
@@ -156,24 +149,20 @@ test('loadPlugin', async function (t) {
   await t.test(
     'should throw if passing a path w/o extension',
     async function () {
-      try {
-        await loadPlugin('./index', {key: 'loadPlugin'})
-        assert.fail()
-      } catch (error) {
-        assert.match(String(error), /Cannot find module/)
-      }
+      await assert.rejects(
+        loadPlugin('./index', {key: 'loadPlugin'}),
+        /Cannot find module/
+      )
     }
   )
 
   await t.test(
     'should throw if passing a path to a directory',
     async function () {
-      try {
-        await loadPlugin('./', {key: 'loadPlugin'})
-        assert.fail()
-      } catch (error) {
-        assert.match(String(error), /Directory import/)
-      }
+      await assert.rejects(
+        loadPlugin('./', {key: 'loadPlugin'}),
+        /Directory import/
+      )
     }
   )
 
@@ -219,12 +208,10 @@ test('loadPlugin', async function (t) {
   await t.test(
     'should throw for `$cwd/node_modules/$name$rest` where $rest is a path without extension',
     async function () {
-      try {
-        await loadPlugin('alpha/other', {from: import.meta.url})
-        assert.fail()
-      } catch (error) {
-        assert.match(String(error), /Cannot find module/)
-      }
+      await assert.rejects(
+        loadPlugin('alpha/other', {from: import.meta.url}),
+        /Cannot find module/
+      )
     }
   )
 
@@ -251,24 +238,17 @@ test('loadPlugin', async function (t) {
   // Global: `$modules/$plugin` is untestable
 
   await t.test('should throw if a path cannot be found', async function () {
-    try {
-      await loadPlugin('does not exist', {global: true, prefix: 'this'})
-      assert.fail()
-    } catch (error) {
-      assert.match(String(error), /Cannot find package 'does not exist'/)
-    }
+    await assert.rejects(
+      loadPlugin('does not exist', {global: true, prefix: 'this'}),
+      /Cannot find package 'does not exist'/
+    )
   })
 
   await t.test('should throw for just a scope', async function () {
-    try {
-      await loadPlugin('@foxtrot', {from: import.meta.url, prefix: 'foo'})
-      assert.fail()
-    } catch (error) {
-      assert.match(
-        String(error),
-        /Invalid module "@foxtrot" is not a valid package name/
-      )
-    }
+    await assert.rejects(
+      loadPlugin('@foxtrot', {from: import.meta.url, prefix: 'foo'}),
+      /Invalid module "@foxtrot" is not a valid package name/
+    )
   })
 
   await t.test(
@@ -291,11 +271,6 @@ test('resolvePlugin', async function (t) {
   })
 
   await t.test('should throw for just a scope', async function () {
-    try {
-      await resolvePlugin('does not exist')
-      assert.fail()
-    } catch (error) {
-      assert.match(String(error), /Cannot find package/)
-    }
+    await assert.rejects(resolvePlugin('does not exist'), /Cannot find package/)
   })
 })

@@ -182,13 +182,13 @@ See [How to Contribute to Open Source][open-source-guide-contribute].
 
 <!-- Definitions -->
 
-[api-load-plugin]: #loadpluginname-options
-
 [api-load-options]: #loadoptions
 
-[api-resolve-plugin]: #resolvepluginname-options
+[api-load-plugin]: #loadpluginname-options
 
 [api-resolve-options]: #resolveoptions
+
+[api-resolve-plugin]: #resolvepluginname-options
 
 [badge-build-image]: https://github.com/wooorm/load-plugin/workflows/main/badge.svg
 
